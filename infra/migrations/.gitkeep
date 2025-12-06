@@ -1,0 +1,9 @@
+# Prisma Migrations
+
+This directory will contain database migration files after running:
+
+```bash
+pnpm prisma migrate dev
+```
+
+Migration files are git-ignored for development but should be committed in production.

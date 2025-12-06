@@ -1,0 +1,369 @@
+// This is your Prisma schema file
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole @default(VIEWER)
+  farmId    String?
+  farm      Farm?    @relation(fields: [farmId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  createdExpenses   Expense[]     @relation("ExpenseCreator")
+  createdTasks      Task[]        @relation("TaskCreator")
+  createdDeliveries DeliveryLog[] @relation("DeliveryCreator")
+  assignedTasks     Task[]        @relation("TaskAssignee")
+  recordedFeeding   FeedingLog[]  @relation("FeedingRecorder")
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  WORKER
+  VIEWER
+}
+
+model Farm {
+  id            String   @id @default(cuid())
+  name          String
+  location      String
+  totalArea     Float?
+  ownerName     String
+  contactNumber String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  users      User[]
+  animals    Animal[]
+  expenses   Expense[]
+  workers    Worker[]
+  tasks      Task[]
+  deliveries DeliveryLog[]
+
+  @@map("farms")
+}
+
+model Animal {
+  id            String         @id @default(cuid())
+  tagNumber     String         @unique
+  name          String?
+  breed         String
+  dateOfBirth   DateTime
+  gender        AnimalGender
+  category      AnimalCategory
+  status        AnimalStatus   @default(ACTIVE)
+  farmId        String
+  farm          Farm           @relation(fields: [farmId], references: [id])
+  purchaseDate  DateTime?
+  purchasePrice Float?
+  currentWeight Float?
+  notes         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relations
+  milkRecords MilkRecord[]
+  feedingLogs FeedingLog[]
+  vetVisits   VetVisit[]
+
+  @@map("animals")
+}
+
+enum AnimalGender {
+  MALE
+  FEMALE
+}
+
+enum AnimalCategory {
+  CALF
+  HEIFER
+  COW
+  BULL
+}
+
+enum AnimalStatus {
+  ACTIVE
+  PREGNANT
+  SICK
+  SOLD
+  DECEASED
+}
+
+model MilkRecord {
+  id         String       @id @default(cuid())
+  animalId   String
+  animal     Animal       @relation(fields: [animalId], references: [id])
+  farmId     String
+  date       DateTime
+  session    MilkSession
+  quantity   Float
+  fatContent Float?
+  quality    MilkQuality?
+  notes      String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@map("milk_records")
+}
+
+enum MilkSession {
+  MORNING
+  EVENING
+}
+
+enum MilkQuality {
+  EXCELLENT
+  GOOD
+  AVERAGE
+  POOR
+}
+
+model Expense {
+  id            String          @id @default(cuid())
+  farmId        String
+  farm          Farm            @relation(fields: [farmId], references: [id])
+  category      ExpenseCategory
+  description   String
+  amount        Float
+  date          DateTime
+  paymentMethod PaymentMethod   @default(CASH)
+  receiptNumber String?
+  vendor        String?
+  notes         String?
+  createdById   String
+  creator       User            @relation("ExpenseCreator", fields: [createdById], references: [id])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@map("expenses")
+}
+
+enum ExpenseCategory {
+  FEED
+  MEDICINE
+  EQUIPMENT
+  LABOR
+  UTILITIES
+  MAINTENANCE
+  VETERINARY
+  TRANSPORT
+  OTHER
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  UPI
+  BANK_TRANSFER
+  CHEQUE
+}
+
+model Worker {
+  id            String       @id @default(cuid())
+  farmId        String
+  farm          Farm         @relation(fields: [farmId], references: [id])
+  name          String
+  contactNumber String
+  email         String?
+  address       String?
+  role          WorkerRole
+  shift         WorkerShift  @default(DAY)
+  salary        Float
+  joinDate      DateTime
+  status        WorkerStatus @default(ACTIVE)
+  notes         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@map("workers")
+}
+
+enum WorkerRole {
+  MANAGER
+  SUPERVISOR
+  MILKER
+  FEEDER
+  CLEANER
+  DRIVER
+  VETERINARIAN
+  OTHER
+}
+
+enum WorkerShift {
+  MORNING
+  EVENING
+  NIGHT
+  DAY
+  FULL_TIME
+}
+
+enum WorkerStatus {
+  ACTIVE
+  ON_LEAVE
+  RESIGNED
+  TERMINATED
+}
+
+model Task {
+  id           String       @id @default(cuid())
+  farmId       String
+  farm         Farm         @relation(fields: [farmId], references: [id])
+  title        String
+  description  String?
+  assignedToId String?
+  assignedTo   User?        @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  dueDate      DateTime
+  priority     TaskPriority
+  status       TaskStatus   @default(PENDING)
+  notes        String?
+  createdById  String
+  creator      User         @relation("TaskCreator", fields: [createdById], references: [id])
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@map("tasks")
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model FeedingLog {
+  id           String      @id @default(cuid())
+  farmId       String
+  animalId     String
+  animal       Animal      @relation(fields: [animalId], references: [id])
+  date         DateTime
+  feedingTime  FeedingTime
+  feedType     FeedType
+  quantity     Float
+  cost         Float?
+  notes        String?
+  recordedById String
+  recorder     User        @relation("FeedingRecorder", fields: [recordedById], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@map("feeding_logs")
+}
+
+enum FeedingTime {
+  MORNING
+  AFTERNOON
+  EVENING
+}
+
+enum FeedType {
+  HAY
+  SILAGE
+  CONCENTRATE
+  GRAINS
+  MINERAL_SUPPLEMENTS
+  FRESH_GRASS
+}
+
+model DeliveryLog {
+  id             String         @id @default(cuid())
+  farmId         String
+  farm           Farm           @relation(fields: [farmId], references: [id])
+  deliveryDate   DateTime
+  buyerName      String
+  buyerPhone     String?
+  quantity       Float
+  pricePerLiter  Float
+  totalAmount    Float
+  deliveryStatus DeliveryStatus @default(PENDING)
+  paymentStatus  PaymentStatus  @default(PENDING)
+  address        String?
+  notes          String?
+  createdById    String
+  creator        User           @relation("DeliveryCreator", fields: [createdById], references: [id])
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@map("delivery_logs")
+}
+
+enum DeliveryStatus {
+  PENDING
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIAL
+  OVERDUE
+}
+
+model VetVisit {
+  id            String         @id @default(cuid())
+  animalId      String
+  animal        Animal         @relation(fields: [animalId], references: [id])
+  visitDate     DateTime
+  visitType     VetVisitType?
+  visitReason   String
+  treatmentType TreatmentType?
+  diagnosis     String?
+  treatment     String?
+  prescription  String?
+  veterinarian  String
+  cost          Float
+  visitStatus   VetVisitStatus @default(SCHEDULED)
+  nextVisitDate DateTime?
+  notes         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("vet_visits")
+}
+
+enum VetVisitType {
+  ROUTINE
+  EMERGENCY
+  FOLLOWUP
+  VACCINATION
+  CHECKUP
+}
+
+enum TreatmentType {
+  VACCINATION
+  MEDICATION
+  SURGERY
+  CHECKUP
+  DEWORMING
+  OTHER
+}
+
+enum VetVisitStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}

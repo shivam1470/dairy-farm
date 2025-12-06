@@ -1,0 +1,10 @@
+# Vercel Configuration for Frontend
+
+framework: nextjs
+buildCommand: cd apps/web && pnpm build
+outputDirectory: apps/web/.next
+installCommand: pnpm install
+devCommand: cd apps/web && pnpm dev
+
+# Environment Variables to set in Vercel Dashboard:
+# NEXT_PUBLIC_API_URL = https://your-backend-url.railway.app
