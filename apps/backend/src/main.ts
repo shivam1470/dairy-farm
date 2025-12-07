@@ -7,9 +7,7 @@ async function bootstrap() {
 
   // Enable CORS for frontend apps
   app.enableCors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://dairy-farm-web.vercel.app', 'https://dairy-farm-shivam1470.vercel.app', /\.vercel\.app$/]
-      : ['http://localhost:3000', 'http://localhost:8081'],
+    origin: true, // Allow all origins temporarily for debugging
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
