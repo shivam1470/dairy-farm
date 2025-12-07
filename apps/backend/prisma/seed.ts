@@ -24,7 +24,7 @@ async function main() {
       name: 'Green Valley Dairy Farm',
       location: 'Punjab, India',
       totalArea: 25.5,
-      ownerName: 'Rajesh Kumar',
+      ownerName: 'Aniket Mishra',
       contactNumber: '+91-98765-43210',
     },
   });
@@ -37,7 +37,7 @@ async function main() {
     data: {
       email: 'admin@greenvaleyfarm.com',
       password: hashedPassword,
-      name: 'Rajesh Kumar',
+      name: 'Aniket Mishra',
       role: 'ADMIN',
       farmId: farm.id,
     },
