@@ -3,7 +3,6 @@
 import React from 'react';
 import {
   Drawer,
-  List,
   ListItem,
   ListItemButton,
   ListItemIcon,
@@ -66,17 +65,25 @@ const Sidebar: React.FC = React.memo(() => {
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-          Dairy Farm
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: 1,
+          borderColor: 'divider',
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+        }}
+      >
+        <Typography variant="h6" component="div" sx={{ fontWeight: 700, mb: 0.5 }}>
+          🐄 Dairy Farm
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{ opacity: 0.8 }}>
           Management System
         </Typography>
       </Box>
 
       {/* Navigation */}
-      <List sx={{ flex: 1, pt: 1 }}>
+      <Box sx={{ flex: 1, py: 1 }}>
         {menuItems.map((item) => {
           const isActive = pathname === item.path;
 
@@ -89,11 +96,16 @@ const Sidebar: React.FC = React.memo(() => {
                 selected={isActive}
                 sx={{
                   mx: 1,
-                  borderRadius: 1,
+                  borderRadius: 2,
+                  py: 1.5,
                   '&.Mui-selected': {
-                    backgroundColor: theme.palette.primary.main + '10',
+                    backgroundColor: theme.palette.primary.main + '20',
+                    color: theme.palette.primary.main,
                     '&:hover': {
-                      backgroundColor: theme.palette.primary.main + '20',
+                      backgroundColor: theme.palette.primary.main + '30',
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: theme.palette.primary.main,
                     },
                   },
                   '&:hover': {
@@ -108,14 +120,14 @@ const Sidebar: React.FC = React.memo(() => {
                   primary={item.text}
                   primaryTypographyProps={{
                     fontSize: '0.95rem',
-                    fontWeight: isActive ? 600 : 400,
+                    fontWeight: isActive ? 600 : 500,
                   }}
                 />
               </ListItemButton>
             </ListItem>
           );
         })}
-      </List>
+      </Box>
 
       {/* Footer */}
       <Divider />

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   AppBar,
@@ -9,10 +9,15 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Menu,
+  MenuItem,
+  Avatar,
+  Divider,
 } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, AccountCircle, Logout } from '@mui/icons-material';
 import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useLayoutStore } from '@/store/layoutStore';
 
 const DRAWER_WIDTH = 280;
@@ -27,12 +32,27 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = React.memo(({ children }
   const pathname = usePathname();
   const { toggleSidebar, closeSidebar } = useLayoutStore();
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
   // Auto-close sidebar on route change on mobile
   useEffect(() => {
     if (isMobile) {
       closeSidebar();
     }
   }, [pathname, isMobile, closeSidebar]);
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    // TODO: Implement logout logic
+    handleClose();
+  };
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -50,12 +70,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = React.memo(({ children }
         }}
       >
         {/* App Bar */}
-        {/* <AppBar
+        <AppBar
           position="sticky"
           elevation={0}
           sx={{
-            width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-            ml: { md: `${DRAWER_WIDTH}px` },
             backgroundColor: theme.palette.background.paper,
             color: theme.palette.text.primary,
             borderBottom: `1px solid ${theme.palette.divider}`,
@@ -74,11 +92,53 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = React.memo(({ children }
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div">
+            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
               Dairy Farm Management
             </Typography>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
+            {/* User Menu */}
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
+              <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.primary.main }}>
+                U
+              </Avatar>
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>
+                <AccountCircle sx={{ mr: 1 }} />
+                Profile
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={handleLogout}>
+                <Logout sx={{ mr: 1 }} />
+                Logout
+              </MenuItem>
+            </Menu>
           </Toolbar>
-        </AppBar> */}
+        </AppBar>
 
         {/* Page Content */}
         <Box
@@ -86,7 +146,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = React.memo(({ children }
             flex: 1,
             p: { xs: 2, sm: 3 },
             backgroundColor: theme.palette.background.default,
-            minHeight: 'calc(100vh - 64px)', // Account for AppBar height
+            minHeight: 'calc(100vh - 64px)',
           }}
         >
           {children}
