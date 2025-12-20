@@ -1,4 +1,4 @@
-import { AnimalStatus, AnimalCategory } from '@dairy-farm/types';
+import { AnimalStatus } from '@dairy-farm/types';
 
 /**
  * Get the appropriate color for animal status chips
@@ -15,24 +15,6 @@ export const getStatusColor = (status: AnimalStatus) => {
       return 'warning';
     case AnimalStatus.DECEASED:
       return 'default';
-    default:
-      return 'default';
-  }
-};
-
-/**
- * Get the appropriate color for animal category chips
- */
-export const getCategoryColor = (category: AnimalCategory) => {
-  switch (category) {
-    case AnimalCategory.CALF:
-      return 'primary';
-    case AnimalCategory.HEIFER:
-      return 'secondary';
-    case AnimalCategory.COW:
-      return 'success';
-    case AnimalCategory.BULL:
-      return 'warning';
     default:
       return 'default';
   }

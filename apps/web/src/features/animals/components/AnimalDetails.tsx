@@ -24,8 +24,8 @@ import {
   Category,
   Wc,
 } from '@mui/icons-material';
-import { Animal, AnimalStatus, AnimalCategory, AnimalGender } from '@dairy-farm/types';
-import { getStatusColor, getCategoryColor, formatDate, calculateAge } from '../constant';
+import { Animal, AnimalStatus, AnimalType, LifeStage, AnimalGender } from '@dairy-farm/types';
+import { getStatusColor, formatDate, calculateAge } from '../constant';
 
 interface AnimalDetailsProps {
   animal: Animal | null;
@@ -69,8 +69,14 @@ const AnimalDetails: React.FC<AnimalDetailsProps> = ({ animal, open, onClose, on
               size="small"
             />
             <Chip
-              label={animal.category}
-              color={getCategoryColor(animal.category)}
+              label={animal.type}
+              color="info"
+              variant="outlined"
+              size="small"
+            />
+            <Chip
+              label={animal.lifeStage}
+              color="warning"
               variant="outlined"
               size="small"
             />
@@ -113,6 +119,18 @@ const AnimalDetails: React.FC<AnimalDetailsProps> = ({ animal, open, onClose, on
                   icon={<Wc />}
                   label="Gender"
                   value={animal.gender === AnimalGender.MALE ? 'Male' : 'Female'}
+                />
+
+                <InfoItem
+                  icon={<Category />}
+                  label="Animal Type"
+                  value={animal.type}
+                />
+
+                <InfoItem
+                  icon={<Category />}
+                  label="Life Stage"
+                  value={animal.lifeStage}
                 />
 
                 <InfoItem

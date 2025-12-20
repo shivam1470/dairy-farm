@@ -1,5 +1,5 @@
 import { CreateAnimalDto } from '@dairy-farm/types';
-import { AnimalGender, AnimalCategory, AnimalStatus } from '@dairy-farm/types';
+import { AnimalGender, AnimalType, LifeStage, AnimalStatus, AnimalAcquisitionType } from '@dairy-farm/types';
 
 /**
  * Default values for creating a new animal
@@ -9,12 +9,18 @@ export const defaultAnimalValues: CreateAnimalDto = {
   name: '',
   breed: '',
   dateOfBirth: new Date(),
+  timeOfBirth: undefined,
   gender: AnimalGender.FEMALE,
-  category: AnimalCategory.CALF,
+  type: AnimalType.COW,
+  lifeStage: LifeStage.CALF,
   status: AnimalStatus.ACTIVE,
+  acquisitionType: AnimalAcquisitionType.BORN,
   farmId: '',
   purchaseDate: undefined,
   purchasePrice: undefined,
+  purchaseFromName: '',
+  purchaseFromMobile: '',
+  purchaseFromEmail: '',
 };
 
 /**
@@ -31,7 +37,8 @@ export const defaultPagination = {
 export const defaultFilters = {
   searchTerm: '',
   statusFilter: 'ALL' as AnimalStatus | 'ALL',
-  categoryFilter: 'ALL' as AnimalCategory | 'ALL',
+  typeFilter: 'ALL' as AnimalType | 'ALL',
+  lifeStageFilter: 'ALL' as LifeStage | 'ALL',
 };
 
 /**
@@ -43,13 +50,20 @@ export const genderOptions = [
 ];
 
 /**
- * Dropdown options for animal category
+ * Dropdown options for animal type
  */
-export const categoryOptions = [
-  { value: AnimalCategory.CALF, label: 'Calf' },
-  { value: AnimalCategory.HEIFER, label: 'Heifer' },
-  { value: AnimalCategory.COW, label: 'Cow' },
-  { value: AnimalCategory.BULL, label: 'Bull' },
+export const typeOptions = [
+  { value: AnimalType.COW, label: 'Cow' },
+  { value: AnimalType.BUFFALO, label: 'Buffalo' },
+];
+
+/**
+ * Dropdown options for animal life stage
+ */
+export const lifeStageOptions = [
+  { value: LifeStage.CALF, label: 'Calf' },
+  { value: LifeStage.HEIFER, label: 'Heifer' },
+  { value: LifeStage.ADULT, label: 'Adult' },
 ];
 
 /**
@@ -72,9 +86,25 @@ export const statusFilterOptions = [
 ];
 
 /**
- * Filter options for category (includes "All" option)
+ * Filter options for type (includes "All" option)
  */
-export const categoryFilterOptions = [
-  { value: 'ALL', label: 'All Categories' },
-  ...categoryOptions,
+export const typeFilterOptions = [
+  { value: 'ALL', label: 'All Types' },
+  ...typeOptions,
+];
+
+/**
+ * Filter options for life stage (includes "All" option)
+ */
+export const lifeStageFilterOptions = [
+  { value: 'ALL', label: 'All Life Stages' },
+  ...lifeStageOptions,
+];
+
+/**
+ * Dropdown options for animal acquisition type
+ */
+export const acquisitionTypeOptions = [
+  { value: AnimalAcquisitionType.BORN, label: 'Born on Farm' },
+  { value: AnimalAcquisitionType.PURCHASED, label: 'Purchased' },
 ];

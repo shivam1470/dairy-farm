@@ -60,22 +60,28 @@ model Farm {
 }
 
 model Animal {
-  id            String         @id @default(cuid())
-  tagNumber     String         @unique
-  name          String?
-  breed         String
-  dateOfBirth   DateTime
-  gender        AnimalGender
-  category      AnimalCategory
-  status        AnimalStatus   @default(ACTIVE)
-  farmId        String
-  farm          Farm           @relation(fields: [farmId], references: [id])
-  purchaseDate  DateTime?
-  purchasePrice Float?
-  currentWeight Float?
-  notes         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                String           @id @default(cuid())
+  tagNumber         String           @unique
+  name              String?
+  breed             String
+  dateOfBirth       DateTime
+  timeOfBirth       DateTime?
+  gender            AnimalGender
+  type              AnimalType
+  lifeStage         LifeStage
+  status            AnimalStatus     @default(ACTIVE)
+  acquisitionType   AnimalAcquisitionType @default(BORN)
+  farmId            String
+  farm              Farm             @relation(fields: [farmId], references: [id])
+  purchaseDate      DateTime?
+  purchasePrice     Float?
+  purchaseFromName  String?
+  purchaseFromMobile String?
+  purchaseFromEmail String?
+  currentWeight     Float?
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 
   // Relations
   milkRecords MilkRecord[]
@@ -90,11 +96,15 @@ enum AnimalGender {
   FEMALE
 }
 
-enum AnimalCategory {
+enum AnimalType {
+  COW
+  BUFFALO
+}
+
+enum LifeStage {
   CALF
   HEIFER
-  COW
-  BULL
+  ADULT
 }
 
 enum AnimalStatus {
@@ -103,6 +113,11 @@ enum AnimalStatus {
   SICK
   SOLD
   DECEASED
+}
+
+enum AnimalAcquisitionType {
+  BORN
+  PURCHASED
 }
 
 model MilkRecord {

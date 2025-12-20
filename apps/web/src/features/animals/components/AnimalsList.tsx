@@ -27,8 +27,8 @@ import {
   Delete,
   Add,
 } from '@mui/icons-material';
-import { Animal, AnimalStatus, AnimalCategory, AnimalGender } from '@dairy-farm/types';
-import { getStatusColor, getCategoryColor, calculateAgeShort, defaultPagination, defaultFilters, statusFilterOptions, categoryFilterOptions } from '../constant';
+import { Animal, AnimalStatus, AnimalType, LifeStage, AnimalGender } from '@dairy-farm/types';
+import { getStatusColor, calculateAgeShort, defaultPagination, defaultFilters, statusFilterOptions, typeFilterOptions, lifeStageFilterOptions } from '../constant';
 
 interface AnimalsListProps {
   animals: Animal[];
@@ -51,7 +51,8 @@ const AnimalsList: React.FC<AnimalsListProps> = ({
   const [rowsPerPage, setRowsPerPage] = useState(defaultPagination.rowsPerPage);
   const [searchTerm, setSearchTerm] = useState(defaultFilters.searchTerm);
   const [statusFilter, setStatusFilter] = useState<AnimalStatus | 'ALL'>(defaultFilters.statusFilter);
-  const [categoryFilter, setCategoryFilter] = useState<AnimalCategory | 'ALL'>(defaultFilters.categoryFilter);
+  const [typeFilter, setTypeFilter] = useState<AnimalType | 'ALL'>(defaultFilters.typeFilter);
+  const [lifeStageFilter, setLifeStageFilter] = useState<LifeStage | 'ALL'>(defaultFilters.lifeStageFilter);
 
   // Filter and search animals
   const filteredAnimals = useMemo(() => {
@@ -62,11 +63,12 @@ const AnimalsList: React.FC<AnimalsListProps> = ({
         animal.breed.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesStatus = statusFilter === 'ALL' || animal.status === statusFilter;
-      const matchesCategory = categoryFilter === 'ALL' || animal.category === categoryFilter;
+      const matchesType = typeFilter === 'ALL' || animal.type === typeFilter;
+      const matchesLifeStage = lifeStageFilter === 'ALL' || animal.lifeStage === lifeStageFilter;
 
-      return matchesSearch && matchesStatus && matchesCategory;
+      return matchesSearch && matchesStatus && matchesType && matchesLifeStage;
     });
-  }, [animals, searchTerm, statusFilter, categoryFilter]);
+  }, [animals, searchTerm, statusFilter, typeFilter, lifeStageFilter]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -134,12 +136,26 @@ const AnimalsList: React.FC<AnimalsListProps> = ({
 
           <TextField
             select
-            label="Category"
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value as AnimalCategory | 'ALL')}
+            label="Type"
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value as AnimalType | 'ALL')}
             sx={{ minWidth: 120 }}
           >
-            {categoryFilterOptions.map((option) => (
+            {typeFilterOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+
+          <TextField
+            select
+            label="Life Stage"
+            value={lifeStageFilter}
+            onChange={(e) => setLifeStageFilter(e.target.value as LifeStage | 'ALL')}
+            sx={{ minWidth: 120 }}
+          >
+            {lifeStageFilterOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -173,7 +189,7 @@ const AnimalsList: React.FC<AnimalsListProps> = ({
             ) : filteredAnimals.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} align="center">
-                  {searchTerm || statusFilter !== 'ALL' || categoryFilter !== 'ALL'
+                  {searchTerm || statusFilter !== 'ALL' || typeFilter !== 'ALL' || lifeStageFilter !== 'ALL'
                     ? 'No animals match your filters'
                     : 'No animals found. Add your first animal to get started.'}
                 </TableCell>
@@ -200,12 +216,20 @@ const AnimalsList: React.FC<AnimalsListProps> = ({
                       />
                     </TableCell>
                     <TableCell>
-                      <Chip
-                        label={animal.category}
-                        size="small"
-                        color={getCategoryColor(animal.category)}
-                        variant="outlined"
-                      />
+                      <Box display="flex" flexDirection="column" gap={0.5}>
+                        <Chip
+                          label={animal.type}
+                          size="small"
+                          color="info"
+                          variant="outlined"
+                        />
+                        <Chip
+                          label={animal.lifeStage}
+                          size="small"
+                          color="warning"
+                          variant="outlined"
+                        />
+                      </Box>
                     </TableCell>
                     <TableCell>
                       <Chip
