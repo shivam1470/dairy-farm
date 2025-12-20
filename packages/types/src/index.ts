@@ -60,13 +60,20 @@ export interface Animal {
   name?: string;
   breed: string;
   dateOfBirth: Date;
+  timeOfBirth?: Date;
   gender: AnimalGender;
-  category: AnimalCategory;
+  type: AnimalType;
+  lifeStage: LifeStage;
   status: AnimalStatus;
+  acquisitionType: AnimalAcquisitionType;
   farmId: string;
   purchaseDate?: Date;
   purchasePrice?: number;
+  purchaseFromName?: string;
+  purchaseFromMobile?: string;
+  purchaseFromEmail?: string;
   currentWeight?: number;
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -76,11 +83,15 @@ export enum AnimalGender {
   FEMALE = 'FEMALE',
 }
 
-export enum AnimalCategory {
+export enum AnimalType {
+  COW = 'COW',
+  BUFFALO = 'BUFFALO',
+}
+
+export enum LifeStage {
   CALF = 'CALF',
   HEIFER = 'HEIFER',
-  COW = 'COW',
-  BULL = 'BULL',
+  ADULT = 'ADULT',
 }
 
 export enum AnimalStatus {
@@ -91,16 +102,28 @@ export enum AnimalStatus {
   DECEASED = 'DECEASED',
 }
 
+export enum AnimalAcquisitionType {
+  BORN = 'BORN',
+  PURCHASED = 'PURCHASED',
+}
+
 export interface CreateAnimalDto {
   tagNumber: string;
   name?: string;
   breed: string;
   dateOfBirth: Date;
+  timeOfBirth?: Date;
   gender: AnimalGender;
-  category: AnimalCategory;
+  type: AnimalType;
+  lifeStage: LifeStage;
+  status: AnimalStatus;
+  acquisitionType: AnimalAcquisitionType;
   farmId: string;
   purchaseDate?: Date;
   purchasePrice?: number;
+  purchaseFromName?: string;
+  purchaseFromMobile?: string;
+  purchaseFromEmail?: string;
 }
 
 // Milk Record Types
