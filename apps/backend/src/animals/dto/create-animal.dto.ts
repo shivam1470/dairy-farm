@@ -1,6 +1,7 @@
 import { IsString, IsDateString, IsEnum, IsOptional, IsNumber, IsEmail } from 'class-validator';
 import { AnimalStatus, AnimalGender, AnimalAcquisitionType, AnimalType, LifeStage } from '@prisma/client';
 
+// dto for animal by shivam mishra
 export class CreateAnimalDto {
   @IsString()
   tagNumber: string;
