@@ -12,6 +12,7 @@ async function bootstrap() {
       'http://localhost:3001',
       'http://localhost:8081',
       'https://dairy-farm-web.vercel.app',
+      'https://dairy-farm-backend-8d9p.onrender.com',
       /^https:\/\/.*\.vercel\.app$/,
       /^https:\/\/.*\.onrender\.com$/,
     ],
