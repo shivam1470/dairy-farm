@@ -1,11 +1,16 @@
+databases:
+  - name: dairy-farm-db
+    databaseName: dairy_farm
+    user: dairy_farm_user
+    plan: free
+
 services:
   - type: web
     name: dairy-farm-backend
-    env: node
-    region: oregon
+    runtime: node
     plan: free
     buildCommand: pnpm install && cd apps/backend && npx prisma generate && pnpm build
-    startCommand: cd apps/backend && npx prisma migrate deploy && npx prisma db seed && node dist/main
+    startCommand: cd apps/backend && npx prisma migrate deploy && node dist/main
     envVars:
       - key: NODE_ENV
         value: production
@@ -16,11 +21,4 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: PORT
-        value: 3001
-
-  - type: postgres
-    name: dairy-farm-db
-    region: oregon
-    plan: free
-    databaseName: dairy_farm
-    databaseUser: dairy_farm_user
+        value: 10000
