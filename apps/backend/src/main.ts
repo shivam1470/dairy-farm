@@ -7,10 +7,17 @@ async function bootstrap() {
 
   // Enable CORS for frontend apps
   app.enableCors({
-    origin: true, // Allow all origins temporarily for debugging
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:8081',
+      /\.vercel\.app$/,
+      /\.railway\.app$/,
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    exposedHeaders: ['Authorization'],
   });
 
   // Global validation pipe

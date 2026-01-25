@@ -7,17 +7,14 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { FarmDevelopmentService } from './farm-development.service';
 import { CreatePhaseDto } from './dto/create-phase.dto';
 import { UpdatePhaseDto } from './dto/update-phase.dto';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('farm-development')
-@UseGuards(JwtAuthGuard)
 export class FarmDevelopmentController {
   constructor(
     private readonly farmDevelopmentService: FarmDevelopmentService,
