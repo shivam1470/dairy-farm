@@ -9,7 +9,7 @@ services:
     name: dairy-farm-backend
     runtime: node
     plan: free
-    buildCommand: pnpm install && cd apps/backend && npx prisma generate && pnpm build
+    buildCommand: npm install -g pnpm && pnpm install --prod=false && cd apps/backend && npx prisma generate && pnpm build
     startCommand: cd apps/backend && npx prisma migrate deploy && node dist/main
     envVars:
       - key: NODE_ENV
