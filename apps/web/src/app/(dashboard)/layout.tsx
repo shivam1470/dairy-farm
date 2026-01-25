@@ -15,10 +15,11 @@ import {
   Divider,
 } from '@mui/material';
 import { Menu as MenuIcon, AccountCircle, Logout } from '@mui/icons-material';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useLayoutStore } from '@/store/layoutStore';
+import { useAuthStore } from '@/store/authStore';
 
 const DRAWER_WIDTH = 280;
 
@@ -30,7 +31,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = React.memo(({ children }
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const pathname = usePathname();
+  const router = useRouter();
   const { toggleSidebar, closeSidebar } = useLayoutStore();
+  const { user, clearAuth } = useAuthStore();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -49,9 +52,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = React.memo(({ children }
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    // TODO: Implement logout logic
+  const handleProfile = () => {
     handleClose();
+    router.push('/profile');
+  };
+
+  const handleLogout = () => {
+    clearAuth();
+    handleClose();
+    router.push('/login');
   };
 
   return (
@@ -109,7 +118,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = React.memo(({ children }
               color="inherit"
             >
               <Avatar sx={{ width: 32, height: 32, bgcolor: theme.palette.primary.main }}>
-                U
+                {user?.name?.charAt(0).toUpperCase() || 'U'}
               </Avatar>
             </IconButton>
             <Menu
@@ -127,7 +136,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = React.memo(({ children }
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>
+              <MenuItem onClick={handleProfile}>
                 <AccountCircle sx={{ mr: 1 }} />
                 Profile
               </MenuItem>
