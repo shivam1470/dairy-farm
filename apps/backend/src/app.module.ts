@@ -11,6 +11,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { FeedingModule } from './feeding/feeding.module';
 import { DeliveriesModule } from './deliveries/deliveries.module';
 import { VetModule } from './vet/vet.module';
+import { FarmDevelopmentModule } from './farm-development/farm-development.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -29,6 +30,7 @@ import { AppController } from './app.controller';
     FeedingModule,
     DeliveriesModule,
     VetModule,
+    FarmDevelopmentModule,
   ],
   controllers: [AppController],
 })

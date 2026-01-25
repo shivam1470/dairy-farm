@@ -1,0 +1,71 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches: [develop, staging, main]
+  push:
+    branches: [develop, staging, main]
+
+jobs:
+  test:
+    name: Test & Build
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x]
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+      
+      - name: 🏗️ Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          
+      - name: 📦 Install pnpm
+        run: npm install -g pnpm@8.15.0
+        
+      - name: 📚 Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: 🔍 Type check
+        run: pnpm typecheck
+        
+      - name: 🧹 Lint
+        run: pnpm lint
+        
+      - name: 🏗️ Build
+        run: pnpm build
+        
+      - name: ✅ Tests passed
+        run: echo "All checks passed successfully!"
+
+  notify-success:
+    name: Success Notification
+    needs: test
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      - name: ✅ Pipeline Success
+        run: |
+          echo "🎉 All tests passed!"
+          echo "✅ Type checking: PASSED"
+          echo "✅ Linting: PASSED"
+          echo "✅ Build: PASSED"
+          echo "Ready for deployment!"
+
+  notify-failure:
+    name: Failure Notification
+    needs: test
+    runs-on: ubuntu-latest
+    if: failure()
+    
+    steps:
+      - name: ❌ Pipeline Failed
+        run: |
+          echo "❌ Tests failed!"
+          echo "Please check the logs above for details."
+          exit 1

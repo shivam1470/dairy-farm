@@ -7,6 +7,7 @@ export interface MenuItem {
 
 export const menuItems: MenuItem[] = [
   { text: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+  { text: 'Farm Development', path: '/farm-development', icon: 'Construction' },
   { text: 'Animals', path: '/animals', icon: 'Pets' },
   { text: 'Milk Records', path: '/milk-records', icon: 'Opacity' },
   { text: 'Expenses', path: '/expenses', icon: 'AttachMoney' },
@@ -21,6 +22,7 @@ export const menuItems: MenuItem[] = [
 // Icon mapping for type safety
 export const iconMap = {
   Dashboard: 'Dashboard',
+  Construction: 'Construction',
   Pets: 'Pets',
   Opacity: 'Opacity',
   AttachMoney: 'AttachMoney',

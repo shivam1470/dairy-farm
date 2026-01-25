@@ -427,6 +427,8 @@ async function main() {
     
     for (const animal of animals) {
       // Morning feeding
+      const isCalf = animal.category === 'CALF';
+      const isBull = animal.category === 'BULL';
       feedingLogs.push(
         prisma.feedingLog.create({
           data: {
@@ -434,9 +436,9 @@ async function main() {
             animalId: animal.id,
             date: new Date(date.setHours(7, 0, 0, 0)),
             feedingTime: 'MORNING',
-            feedType: animal.category === 'CALF' ? 'CONCENTRATE' : 'HAY',
-            quantity: animal.category === 'BULL' ? 30 : animal.category === 'CALF' ? 8 : 20,
-            cost: animal.category === 'BULL' ? 450 : animal.category === 'CALF' ? 120 : 300,
+            feedType: isCalf ? 'CONCENTRATE' : 'HAY',
+            quantity: isBull ? 30 : isCalf ? 8 : 20,
+            cost: isBull ? 450 : isCalf ? 120 : 300,
             recordedById: workerUser.id,
             notes: i === 0 ? 'Fresh quality feed' : null,
           },
@@ -452,8 +454,8 @@ async function main() {
             date: new Date(date.setHours(17, 0, 0, 0)),
             feedingTime: 'EVENING',
             feedType: 'CONCENTRATE',
-            quantity: animal.category === 'BULL' ? 15 : animal.category === 'CALF' ? 6 : 12,
-            cost: animal.category === 'BULL' ? 300 : animal.category === 'CALF' ? 100 : 240,
+            quantity: isBull ? 15 : isCalf ? 6 : 12,
+            cost: isBull ? 300 : isCalf ? 100 : 240,
             recordedById: workerUser.id,
           },
         })

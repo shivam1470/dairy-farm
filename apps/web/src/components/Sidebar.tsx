@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Dashboard,
+  Construction,
   Pets,
   Opacity,
   AttachMoney,
@@ -47,6 +48,7 @@ const Sidebar: React.FC = React.memo(() => {
   const getIcon = (iconName: string) => {
     const iconMap: Record<string, React.ComponentType<any>> = {
       Dashboard,
+      Construction,
       Pets,
       Opacity,
       AttachMoney,

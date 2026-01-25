@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Pre-commit hook to ensure code quality
+# This runs automatically before each commit
+
+echo "🔍 Running pre-commit checks..."
+
+# Check if pnpm is available
+if ! command -v pnpm &> /dev/null; then
+    echo "❌ pnpm not found. Please install pnpm first."
+    exit 1
+fi
+
+# Run type check
+echo "📝 Type checking..."
+if ! pnpm typecheck; then
+    echo "❌ Type check failed. Please fix the errors before committing."
+    exit 1
+fi
+
+# Run linter
+echo "🧹 Linting..."
+if ! pnpm lint; then
+    echo "❌ Lint check failed. Please fix the errors before committing."
+    exit 1
+fi
+
+echo "✅ All pre-commit checks passed!"
+exit 0

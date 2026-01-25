@@ -27,6 +27,7 @@ model User {
   createdDeliveries DeliveryLog[] @relation("DeliveryCreator")
   assignedTasks     Task[]        @relation("TaskAssignee")
   recordedFeeding   FeedingLog[]  @relation("FeedingRecorder")
+  assignedMilestones DevelopmentMilestone[] @relation("MilestoneAssignee")
 
   @@map("users")
 }
@@ -39,22 +40,25 @@ enum UserRole {
 }
 
 model Farm {
-  id            String   @id @default(cuid())
-  name          String
-  location      String
-  totalArea     Float?
-  ownerName     String
-  contactNumber String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                     String   @id @default(cuid())
+  name                   String
+  location               String
+  totalArea              Float?
+  ownerName              String
+  contactNumber          String
+  developmentStatus      FarmDevelopmentStatus @default(PLANNING)
+  estimatedCompletionDate DateTime?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 
   // Relations
-  users      User[]
-  animals    Animal[]
-  expenses   Expense[]
-  workers    Worker[]
-  tasks      Task[]
-  deliveries DeliveryLog[]
+  users             User[]
+  animals           Animal[]
+  expenses          Expense[]
+  workers           Worker[]
+  tasks             Task[]
+  deliveries        DeliveryLog[]
+  developmentPhases FarmDevelopmentPhase[]
 
   @@map("farms")
 }
@@ -381,4 +385,80 @@ enum VetVisitStatus {
   SCHEDULED
   COMPLETED
   CANCELLED
+}
+
+model FarmDevelopmentPhase {
+  id            String   @id @default(cuid())
+  farmId        String
+  farm          Farm     @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  
+  phaseName     String
+  description   String?
+  phaseOrder    Int      @default(0)
+  status        DevelopmentStatus @default(NOT_STARTED)
+  progress      Int      @default(0)
+  
+  budget        Float?
+  actualCost    Float?
+  
+  startDate     DateTime?
+  targetDate    DateTime?
+  completedDate DateTime?
+  
+  notes         String?
+  
+  milestones    DevelopmentMilestone[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([farmId])
+  @@map("farm_development_phases")
+}
+
+model DevelopmentMilestone {
+  id            String   @id @default(cuid())
+  phaseId       String
+  phase         FarmDevelopmentPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  
+  title         String
+  description   String?
+  milestoneOrder Int    @default(0)
+  status        MilestoneStatus @default(PENDING)
+  
+  dueDate       DateTime?
+  completedDate DateTime?
+  
+  assignedToId  String?
+  assignedTo    User?   @relation("MilestoneAssignee", fields: [assignedToId], references: [id])
+  
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([phaseId])
+  @@map("development_milestones")
+}
+
+enum FarmDevelopmentStatus {
+  PLANNING
+  LAND_ACQUISITION
+  INFRASTRUCTURE
+  EQUIPMENT_SETUP
+  ANIMAL_ACQUISITION
+  OPERATIONAL
+}
+
+enum DevelopmentStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
 }
