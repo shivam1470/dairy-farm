@@ -25,7 +25,8 @@ const paymentValidationSchema = Yup.object({
   category: Yup.mixed<PaymentCategory>().oneOf(Object.values(PaymentCategory)).required('Category is required'),
   amount: Yup.number().positive('Amount must be positive').required('Amount is required'),
   description: Yup.string().required('Description is required'),
-  date: Yup.date().required('Date is required'),
+  date: Yup.date().required('Entry date is required'),
+  transactionDate: Yup.date().required('Transaction date is required'),
   paymentMethod: Yup.mixed<PaymentMethod>().oneOf(Object.values(PaymentMethod)).required('Payment method is required'),
 });
 
@@ -35,6 +36,7 @@ const defaultPaymentValues: CreatePaymentDto = {
   amount: 0,
   description: '',
   date: new Date().toISOString().split('T')[0],
+  transactionDate: new Date().toISOString().split('T')[0],
   paymentMethod: PaymentMethod.CASH,
   farmId: '',
 };
@@ -42,11 +44,12 @@ const defaultPaymentValues: CreatePaymentDto = {
 interface PaymentFormProps {
   payment?: Payment | null;
   farmId: string;
+  mode?: 'income' | 'expense' | 'edit';
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, onSuccess, onCancel }) => {
+const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit', onSuccess, onCancel }) => {
   const getInitialValues = (): CreatePaymentDto => {
     if (payment) {
       return {
@@ -55,6 +58,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, onSuccess, o
         amount: payment.amount,
         description: payment.description,
         date: new Date(payment.date).toISOString().split('T')[0],
+        transactionDate: new Date(payment.transactionDate).toISOString().split('T')[0],
         paymentMethod: payment.paymentMethod,
         farmId: payment.farmId,
         referenceId: payment.referenceId,
@@ -62,8 +66,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, onSuccess, o
         notes: payment.notes,
       };
     }
+    
+    // Set default type based on mode
+    const defaultType = mode === 'income' ? PaymentType.INCOME : PaymentType.EXPENSE;
+    const defaultCategory = mode === 'income' ? PaymentCategory.OTHER_INCOME : PaymentCategory.OTHER_EXPENSE;
+    
     return {
       ...defaultPaymentValues,
+      type: defaultType,
+      category: defaultCategory,
       farmId,
     };
   };
@@ -215,7 +226,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, onSuccess, o
                 <Field name="date">
                   {({ field }: FieldProps) => (
                     <DatePicker
-                      label="Date"
+                      label="Entry Date"
                       value={field.value ? new Date(field.value) : null}
                       onChange={(date) => {
                         setFieldValue('date', date ? date.toISOString().split('T')[0] : '');
@@ -225,6 +236,27 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, onSuccess, o
                           fullWidth: true,
                           error: touched.date && !!errors.date,
                           helperText: touched.date && errors.date,
+                        },
+                      }}
+                    />
+                  )}
+                </Field>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Field name="transactionDate">
+                  {({ field }: FieldProps) => (
+                    <DatePicker
+                      label="Transaction Date"
+                      value={field.value ? new Date(field.value) : null}
+                      onChange={(date) => {
+                        setFieldValue('transactionDate', date ? date.toISOString().split('T')[0] : '');
+                      }}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: touched.transactionDate && !!errors.transactionDate,
+                          helperText: touched.transactionDate && errors.transactionDate,
                         },
                       }}
                     />
@@ -251,7 +283,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, onSuccess, o
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth error={touched.paymentMethod && !!errors.paymentMethod}>
                   <InputLabel>Payment Method</InputLabel>
-                  <Field name="payment">
+                  <Field name="paymentMethod">
                     {({ field }: FieldProps) => (
                       <Select {...field} label="Payment Method">
                         {paymentMethodOptions.map((option) => (

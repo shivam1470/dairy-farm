@@ -51,7 +51,10 @@ export class CreatePaymentDto {
   description: string;
 
   @IsDateString()
-  date: string;
+  date: string; // When entry was added
+
+  @IsDateString()
+  transactionDate: string; // When money actually moved
 
   @IsEnum(PaymentMethod)
   paymentMethod: PaymentMethod;
@@ -94,6 +97,10 @@ export class UpdatePaymentDto {
   date?: string;
 
   @IsOptional()
+  @IsDateString()
+  transactionDate?: string;
+
+  @IsOptional()
   @IsEnum(PaymentMethod)
   paymentMethod?: PaymentMethod;
 
@@ -108,4 +115,7 @@ export class UpdatePaymentDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @IsOptional()
+  isDeleted?: boolean;
 }

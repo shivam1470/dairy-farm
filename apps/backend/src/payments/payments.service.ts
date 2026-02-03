@@ -10,6 +10,7 @@ export class PaymentsService {
     const data = {
       ...createPaymentDto,
       date: new Date(createPaymentDto.date),
+      transactionDate: new Date(createPaymentDto.transactionDate),
       createdById: userId,
     };
 
@@ -23,13 +24,16 @@ export class PaymentsService {
 
   async findAll(farmId: string) {
     return this.prisma.payment.findMany({
-      where: { farmId },
+      where: { 
+        farmId,
+        isDeleted: false
+      },
       include: {
         creator: {
           select: { name: true, email: true }
         }
       },
-      orderBy: { date: 'desc' }
+      orderBy: { transactionDate: 'desc' }
     });
   }
 
@@ -58,7 +62,8 @@ export class PaymentsService {
 
     const data = {
       ...updatePaymentDto,
-      ...(updatePaymentDto.date && { date: new Date(updatePaymentDto.date) })
+      ...(updatePaymentDto.date && { date: new Date(updatePaymentDto.date) }),
+      ...(updatePaymentDto.transactionDate && { transactionDate: new Date(updatePaymentDto.transactionDate) })
     };
 
     const payment = await this.prisma.payment.update({
@@ -75,7 +80,10 @@ export class PaymentsService {
   async remove(id: string) {
     const payment = await this.findOne(id);
 
-    await this.prisma.payment.delete({ where: { id } });
+    await this.prisma.payment.update({
+      where: { id },
+      data: { isDeleted: true }
+    });
 
     // Update wallet balance
     await this.updateWalletBalance(payment.farmId);
@@ -84,9 +92,12 @@ export class PaymentsService {
   }
 
   private async updateWalletBalance(farmId: string) {
-    // Calculate total income and expenses
+    // Calculate total income and expenses (excluding soft deleted)
     const payments = await this.prisma.payment.findMany({
-      where: { farmId },
+      where: { 
+        farmId,
+        isDeleted: false
+      },
       select: { type: true, amount: true }
     });
 
@@ -126,5 +137,37 @@ export class PaymentsService {
     }
 
     return wallet;
+  }
+
+  async findIncome(farmId: string) {
+    return this.prisma.payment.findMany({
+      where: { 
+        farmId,
+        type: 'INCOME',
+        isDeleted: false
+      },
+      include: {
+        creator: {
+          select: { name: true, email: true }
+        }
+      },
+      orderBy: { transactionDate: 'desc' }
+    });
+  }
+
+  async findExpenses(farmId: string) {
+    return this.prisma.payment.findMany({
+      where: { 
+        farmId,
+        type: 'EXPENSE',
+        isDeleted: false
+      },
+      include: {
+        creator: {
+          select: { name: true, email: true }
+        }
+      },
+      orderBy: { transactionDate: 'desc' }
+    });
   }
 }

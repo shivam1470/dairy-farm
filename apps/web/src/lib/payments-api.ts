@@ -8,6 +8,18 @@ export const paymentsApi = {
     return response.data;
   },
 
+  // Get income payments for a farm
+  getIncome: async (farmId: string): Promise<Payment[]> => {
+    const response = await apiClient.get(`/payments/income?farmId=${farmId}`);
+    return response.data;
+  },
+
+  // Get expense payments for a farm
+  getExpenses: async (farmId: string): Promise<Payment[]> => {
+    const response = await apiClient.get(`/payments/expenses?farmId=${farmId}`);
+    return response.data;
+  },
+
   // Get a single payment by ID
   getById: async (id: string): Promise<Payment> => {
     const response = await apiClient.get(`/payments/${id}`);

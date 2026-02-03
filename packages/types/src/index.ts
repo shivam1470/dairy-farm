@@ -381,12 +381,14 @@ export interface Payment {
   category: PaymentCategory;
   amount: number;
   description: string;
-  date: Date;
+  date: Date; // When entry was added
+  transactionDate: Date; // When money actually moved
   paymentMethod: PaymentMethod;
   farmId: string;
   referenceId?: string;
   referenceType?: ReferenceType;
   notes?: string;
+  isDeleted?: boolean;
   createdById: string;
   creator?: {
     name: string;
@@ -438,7 +440,8 @@ export interface CreatePaymentDto {
   category: PaymentCategory;
   amount: number;
   description: string;
-  date: string;
+  date: string; // When entry was added
+  transactionDate: string; // When money actually moved
   paymentMethod: PaymentMethod;
   farmId: string;
   referenceId?: string;
@@ -452,10 +455,12 @@ export interface UpdatePaymentDto {
   amount?: number;
   description?: string;
   date?: string;
+  transactionDate?: string;
   paymentMethod?: PaymentMethod;
   referenceId?: string;
   referenceType?: ReferenceType;
   notes?: string;
+  isDeleted?: boolean;
 }
 
 // Wallet Types

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Paper,
@@ -10,83 +10,50 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination,
-  TextField,
-  InputAdornment,
+  Button,
+  Typography,
+  Card,
+  CardContent,
   Chip,
   IconButton,
   Tooltip,
-  Typography,
-  Alert,
-  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
-  Search,
+  Add,
   Edit,
   Delete,
-  Visibility,
+  TrendingUp,
+  TrendingDown,
 } from '@mui/icons-material';
-import { Payment, PaymentType, PaymentCategory, PaymentMethod } from '@dairy-farm/types';
+import { Payment, PaymentType, Wallet } from '@dairy-farm/types';
 
 interface PaymentsListProps {
-  payments: Payment[];
+  incomePayments: Payment[];
+  expensePayments: Payment[];
+  wallet: Wallet | null;
   loading: boolean;
+  onAddIncome: () => void;
+  onAddExpense: () => void;
   onEdit: (payment: Payment) => void;
   onDelete: (paymentId: string) => void;
-  onView: (payment: Payment) => void;
 }
 
 const PaymentsList: React.FC<PaymentsListProps> = ({
-  payments,
+  incomePayments,
+  expensePayments,
+  wallet,
   loading,
+  onAddIncome,
+  onAddExpense,
   onEdit,
   onDelete,
-  onView,
 }) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState<PaymentType | 'ALL'>('ALL');
-  const [categoryFilter, setCategoryFilter] = useState<PaymentCategory | 'ALL'>('ALL');
-
-  // Filter and search payments
-  const filteredPayments = useMemo(() => {
-    return payments.filter((payment) => {
-      const matchesSearch =
-        payment.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        payment.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        payment.amount.toString().includes(searchTerm);
-
-      const matchesType = typeFilter === 'ALL' || payment.type === typeFilter;
-      const matchesCategory = categoryFilter === 'ALL' || payment.category === categoryFilter;
-
-      return matchesSearch && matchesType && matchesCategory;
-    });
-  }, [payments, searchTerm, typeFilter, categoryFilter]);
-
-  // Paginate payments
-  const paginatedPayments = useMemo(() => {
-    const startIndex = page * rowsPerPage;
-    return filteredPayments.slice(startIndex, startIndex + rowsPerPage);
-  }, [filteredPayments, page, rowsPerPage]);
-
-  const handleChangePage = (_event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const getTypeColor = (type: PaymentType) => {
-    return type === PaymentType.INCOME ? 'success' : 'error';
-  };
-
-  const getCategoryColor = (category: PaymentCategory): "primary" | "secondary" | "success" | "error" | "info" | "warning" => {
-    // Return a valid MUI color based on category
-    return 'primary';
-  };
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [paymentToDelete, setPaymentToDelete] = useState<Payment | null>(null);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -99,161 +66,165 @@ const PaymentsList: React.FC<PaymentsListProps> = ({
     return new Date(date).toLocaleDateString('en-IN');
   };
 
+  const handleDeleteClick = (payment: Payment) => {
+    setPaymentToDelete(payment);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (paymentToDelete) {
+      onDelete(paymentToDelete.id);
+      setDeleteDialogOpen(false);
+      setPaymentToDelete(null);
+    }
+  };
+
+  const renderPaymentTable = (payments: Payment[], title: string, emptyMessage: string) => (
+    <Paper sx={{ mb: 3 }}>
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h6">{title}</Typography>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={title === 'Income' ? onAddIncome : onAddExpense}
+          color={title === 'Income' ? 'success' : 'error'}
+        >
+          Add {title}
+        </Button>
+      </Box>
+
+      {payments.length === 0 ? (
+        <Box sx={{ p: 3, textAlign: 'center' }}>
+          <Typography color="text.secondary">{emptyMessage}</Typography>
+        </Box>
+      ) : (
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Date</TableCell>
+                <TableCell>Category</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell align="right">Amount</TableCell>
+                <TableCell>Method</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {payments.map((payment) => (
+                <TableRow key={payment.id}>
+                  <TableCell>{formatDate(payment.transactionDate)}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={payment.category.replace('_', ' ')}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell>{payment.description}</TableCell>
+                  <TableCell align="right">
+                    <Typography
+                      color={payment.type === PaymentType.INCOME ? 'success.main' : 'error.main'}
+                      fontWeight="bold"
+                    >
+                      {payment.type === PaymentType.INCOME ? '+' : '-'}{formatCurrency(payment.amount)}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{payment.paymentMethod}</TableCell>
+                  <TableCell>
+                    <Tooltip title="Edit">
+                      <IconButton size="small" onClick={() => onEdit(payment)}>
+                        <Edit />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton size="small" color="error" onClick={() => handleDeleteClick(payment)}>
+                        <Delete />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </Paper>
+  );
+
   if (loading) {
     return (
-      <Paper sx={{ p: 2 }}>
+      <Box>
         <Typography>Loading payments...</Typography>
-      </Paper>
+      </Box>
     );
   }
 
   return (
     <Box>
-      {/* Filters */}
-      <Box display="flex" gap={2} mb={3} flexWrap="wrap">
-        <TextField
-          placeholder="Search payments..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ minWidth: 250 }}
-        />
+      {/* Wallet Summary */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                Current Balance
+              </Typography>
+              <Typography
+                variant="h4"
+                color={wallet && wallet.currentBalance >= 0 ? 'success.main' : 'error.main'}
+                fontWeight="bold"
+              >
+                {wallet ? formatCurrency(wallet.currentBalance) : formatCurrency(0)}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {wallet && wallet.currentBalance >= 0 ? (
+                <TrendingUp color="success" sx={{ fontSize: 40 }} />
+              ) : (
+                <TrendingDown color="error" sx={{ fontSize: 40 }} />
+              )}
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
 
-        <TextField
-          select
-          label="Type"
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value as PaymentType | 'ALL')}
-          sx={{ minWidth: 120 }}
-        >
-          <MenuItem value="ALL">All Types</MenuItem>
-          <MenuItem value={PaymentType.INCOME}>Income</MenuItem>
-          <MenuItem value={PaymentType.EXPENSE}>Expense</MenuItem>
-        </TextField>
+      {/* Income List */}
+      {renderPaymentTable(
+        incomePayments,
+        'Income',
+        'No income records found. Click "Add Income" to record your first income.'
+      )}
 
-        <TextField
-          select
-          label="Category"
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value as PaymentCategory | 'ALL')}
-          sx={{ minWidth: 150 }}
-        >
-          <MenuItem value="ALL">All Categories</MenuItem>
-          {Object.values(PaymentCategory).map((category) => (
-            <MenuItem key={category} value={category}>
-              {category.replace('_', ' ')}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Box>
+      {/* Expense List */}
+      {renderPaymentTable(
+        expensePayments,
+        'Expenses',
+        'No expense records found. Click "Add Expense" to record your first expense.'
+      )}
 
-      {/* Table */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Payment Method</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedPayments.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} align="center">
-                  <Typography variant="body2" color="text.secondary">
-                    No payments found
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ) : (
-              paginatedPayments.map((payment) => (
-                <TableRow key={payment.id} hover>
-                  <TableCell>{formatDate(payment.date)}</TableCell>
-                  <TableCell>{payment.description}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={payment.type}
-                      color={getTypeColor(payment.type)}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={payment.category.replace('_', ' ')}
-                      color={getCategoryColor(payment.category)}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body2"
-                      fontWeight="bold"
-                      color={payment.type === PaymentType.INCOME ? 'success.main' : 'error.main'}
-                    >
-                      {payment.type === PaymentType.INCOME ? '+' : '-'}{formatCurrency(payment.amount)}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{payment.paymentMethod.replace('_', ' ')}</TableCell>
-                  <TableCell>
-                    <Box display="flex" gap={1}>
-                      <Tooltip title="View Details">
-                        <IconButton
-                          size="small"
-                          onClick={() => onView(payment)}
-                          color="info"
-                        >
-                          <Visibility />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Edit">
-                        <IconButton
-                          size="small"
-                          onClick={() => onEdit(payment)}
-                          color="primary"
-                        >
-                          <Edit />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete">
-                        <IconButton
-                          size="small"
-                          onClick={() => onDelete(payment.id)}
-                          color="error"
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {/* Pagination */}
-      <TablePagination
-        component="div"
-        count={filteredPayments.length}
-        page={page}
-        onPageChange={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={[5, 10, 25, 50]}
-      />
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this payment? This action cannot be undone.
+          </Typography>
+          {paymentToDelete && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                {paymentToDelete.description} - {formatCurrency(paymentToDelete.amount)}
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

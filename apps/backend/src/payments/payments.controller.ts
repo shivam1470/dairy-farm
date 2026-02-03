@@ -18,6 +18,16 @@ export class PaymentsController {
     return this.paymentsService.findAll(farmId);
   }
 
+  @Get('income')
+  findIncome(@Query('farmId') farmId: string) {
+    return this.paymentsService.findIncome(farmId);
+  }
+
+  @Get('expenses')
+  findExpenses(@Query('farmId') farmId: string) {
+    return this.paymentsService.findExpenses(farmId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.paymentsService.findOne(id);

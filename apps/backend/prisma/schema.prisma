@@ -474,18 +474,21 @@ model Payment {
   category      PaymentCategory
   amount        Float
   description   String
-  date          DateTime
+  date          DateTime       // When entry was added (keep for backward compatibility)
+  transactionDate DateTime     // When money actually moved
   paymentMethod PaymentMethod  @default(CASH)
   referenceId   String?        // Reference to related entity (expense, delivery, etc.)
   referenceType ReferenceType? // Type of referenced entity
   notes         String?
+  isDeleted     Boolean        @default(false)
   createdById   String
   creator       User           @relation("PaymentCreator", fields: [createdById], references: [id])
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
   @@index([farmId])
-  @@index([date])
+  @@index([transactionDate])
+  @@index([isDeleted])
   @@map("payments")
 }
 

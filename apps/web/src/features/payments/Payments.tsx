@@ -15,15 +15,17 @@ import {
   Fab,
 } from '@mui/material';
 import { Add, Warning } from '@mui/icons-material';
-import { Payment } from '@dairy-farm/types';
-import { paymentsApi } from '@/lib/payments-api';
+import { Payment, Wallet } from '@dairy-farm/types';
+import { paymentsApi, walletApi } from '@/lib/payments-api';
 import { useAuthStore } from '@/store/authStore';
 import PaymentsList from './components/PaymentsList';
 import PaymentForm from './components/PaymentForm';
 import PaymentDetails from './components/PaymentDetails';
 
 const Payments: React.FC = () => {
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [incomePayments, setIncomePayments] = useState<Payment[]>([]);
+  const [expensePayments, setExpensePayments] = useState<Payment[]>([]);
+  const [wallet, setWallet] = useState<Wallet | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -34,6 +36,7 @@ const Payments: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [paymentToDelete, setPaymentToDelete] = useState<Payment | null>(null);
+  const [formMode, setFormMode] = useState<'income' | 'expense' | 'edit'>('edit');
 
   const { user } = useAuthStore();
   const farmId = user?.farmId;
@@ -45,8 +48,19 @@ const Payments: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await paymentsApi.getAll(farmId);
-      setPayments(data);
+      
+      // Load income and expense payments separately
+      const [incomeData, expenseData] = await Promise.all([
+        paymentsApi.getIncome(farmId),
+        paymentsApi.getExpenses(farmId)
+      ]);
+      
+      setIncomePayments(incomeData);
+      setExpensePayments(expenseData);
+      
+      // Load wallet data
+      const walletData = await walletApi.getWallet(farmId);
+      setWallet(walletData);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load payments');
     } finally {
@@ -59,20 +73,29 @@ const Payments: React.FC = () => {
   }, [loadPayments]);
 
   // Handle form success
-  const handleFormSuccess = useCallback(() => {
-    loadPayments();
+  const handleFormSuccess = useCallback(async () => {
+    await loadPayments(); // This will reload all data including wallet
     setSuccessMessage('Payment saved successfully!');
   }, [loadPayments]);
 
-  // Handle add payment
-  const handleAddPayment = useCallback(() => {
+  // Handle add income
+  const handleAddIncome = useCallback(() => {
     setSelectedPayment(null);
+    setFormMode('income');
+    setFormOpen(true);
+  }, []);
+
+  // Handle add expense
+  const handleAddExpense = useCallback(() => {
+    setSelectedPayment(null);
+    setFormMode('expense');
     setFormOpen(true);
   }, []);
 
   // Handle edit payment
   const handleEditPayment = useCallback((payment: Payment) => {
     setSelectedPayment(payment);
+    setFormMode('edit');
     setFormOpen(true);
   }, []);
 
@@ -84,12 +107,12 @@ const Payments: React.FC = () => {
 
   // Handle delete payment
   const handleDeletePayment = useCallback((paymentId: string) => {
-    const payment = payments.find(p => p.id === paymentId);
+    const payment = [...incomePayments, ...expensePayments].find(p => p.id === paymentId);
     if (payment) {
       setPaymentToDelete(payment);
       setDeleteDialogOpen(true);
     }
-  }, [payments]);
+  }, [incomePayments, expensePayments]);
 
   // Confirm delete
   const confirmDelete = useCallback(async () => {
@@ -97,7 +120,14 @@ const Payments: React.FC = () => {
 
     try {
       await paymentsApi.delete(paymentToDelete.id);
-      setPayments(prev => prev.filter(p => p.id !== paymentToDelete.id));
+      
+      // Remove from the appropriate list
+      if (paymentToDelete.type === 'INCOME') {
+        setIncomePayments(prev => prev.filter(p => p.id !== paymentToDelete.id));
+      } else {
+        setExpensePayments(prev => prev.filter(p => p.id !== paymentToDelete.id));
+      }
+      
       setSuccessMessage('Payment deleted successfully!');
       setDeleteDialogOpen(false);
       setPaymentToDelete(null);
@@ -129,22 +159,17 @@ const Payments: React.FC = () => {
           <Typography variant="h4" component="h1" gutterBottom>
             Payments
           </Typography>
-          <Fab
-            color="primary"
-            aria-label="add payment"
-            onClick={handleAddPayment}
-            sx={{ position: 'fixed', bottom: 16, right: 16 }}
-          >
-            <Add />
-          </Fab>
         </Box>
 
         <PaymentsList
-          payments={payments}
+          incomePayments={incomePayments}
+          expensePayments={expensePayments}
+          wallet={wallet}
           loading={loading}
+          onAddIncome={handleAddIncome}
+          onAddExpense={handleAddExpense}
           onEdit={handleEditPayment}
           onDelete={handleDeletePayment}
-          onView={handleViewPayment}
         />
       </Box>
 
@@ -157,6 +182,7 @@ const Payments: React.FC = () => {
           <PaymentForm
             payment={selectedPayment}
             farmId={farmId!}
+            mode={formMode}
             onSuccess={handleFormSuccess}
             onCancel={handleCloseForm}
           />
