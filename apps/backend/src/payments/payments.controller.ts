@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @Controller('payments')
 @UseGuards(JwtAuthGuard)
 export class PaymentsController {
+  // eslint-disable-next-line no-unused-vars
   constructor(private paymentsService: PaymentsService) {}
 
   @Post()

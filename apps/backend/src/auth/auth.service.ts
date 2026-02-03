@@ -7,7 +7,9 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
+    // eslint-disable-next-line no-unused-vars
     private prisma: PrismaService,
+    // eslint-disable-next-line no-unused-vars
     private jwtService: JwtService,
   ) {}
 

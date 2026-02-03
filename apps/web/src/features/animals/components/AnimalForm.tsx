@@ -343,6 +343,22 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
 
                       <Grid item xs={12} sm={6}>
                         <DatePicker
+                          label="Purchase Date *"
+                          value={values.purchaseDate}
+                          onChange={(date: Date | null) => setFieldValue('purchaseDate', date)}
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              required: values.acquisitionType === AnimalAcquisitionType.PURCHASED,
+                              error: touched.purchaseDate && Boolean(errors.purchaseDate),
+                              helperText: touched.purchaseDate && errors.purchaseDate,
+                            },
+                          }}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <DatePicker
                           label="Date of Birth (Approximate)"
                           value={values.dateOfBirth}
                           onChange={(date: Date | null) => setFieldValue('dateOfBirth', date)}
@@ -355,6 +371,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                           }}
                         />
                       </Grid>
+
                       <Grid item xs={12} sm={6}>
                         <Field name="purchasePrice">
                           {({ field }: FieldProps) => (

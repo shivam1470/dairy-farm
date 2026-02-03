@@ -5,6 +5,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
+  // eslint-disable-next-line no-unused-vars
   constructor(private authService: AuthService) {}
 
   @Post('register')

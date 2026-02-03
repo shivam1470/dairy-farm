@@ -4,6 +4,7 @@ import { CreatePaymentDto, UpdatePaymentDto } from './dto/create-payment.dto';
 
 @Injectable()
 export class PaymentsService {
+  // eslint-disable-next-line no-unused-vars
   constructor(private prisma: PrismaService) {}
 
   async create(createPaymentDto: CreatePaymentDto, userId: string) {
