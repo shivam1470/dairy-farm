@@ -83,7 +83,10 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit
     try {
       setStatus(null);
       if (payment) {
-        await paymentsApi.update(payment.id, values);
+        // For updates, remove farmId since it shouldn't be editable
+        const updateValues = { ...values };
+        delete (updateValues as any).farmId;
+        await paymentsApi.update(payment.id, updateValues);
       } else {
         await paymentsApi.create(values);
       }

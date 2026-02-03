@@ -27,7 +27,7 @@ export const iconMap = {
   Pets: 'Pets',
   Opacity: 'Opacity',
   AttachMoney: 'AttachMoney',
-  Payment: 'Payment',
+  Payment: 'AttachMoney',
   AccountBalanceWallet: 'AccountBalanceWallet',
   People: 'People',
   Assignment: 'Assignment',
