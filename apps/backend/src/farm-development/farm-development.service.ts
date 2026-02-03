@@ -16,6 +16,15 @@ export class FarmDevelopmentService {
 
   // Phase CRUD Operations
   async createPhase(data: CreatePhaseDto) {
+    // Validate that the farm exists
+    const farm = await this.prisma.farm.findUnique({
+      where: { id: data.farmId },
+    });
+
+    if (!farm) {
+      throw new NotFoundException(`Farm with ID ${data.farmId} not found`);
+    }
+
     const phase = await this.prisma.farmDevelopmentPhase.create({
       data: {
         farmId: data.farmId,

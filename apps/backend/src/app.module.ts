@@ -12,6 +12,8 @@ import { FeedingModule } from './feeding/feeding.module';
 import { DeliveriesModule } from './deliveries/deliveries.module';
 import { VetModule } from './vet/vet.module';
 import { FarmDevelopmentModule } from './farm-development/farm-development.module';
+import { PaymentsModule } from './payments/payments.module';
+import { WalletModule } from './wallet/wallet.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -31,6 +33,8 @@ import { AppController } from './app.controller';
     DeliveriesModule,
     VetModule,
     FarmDevelopmentModule,
+    PaymentsModule,
+    WalletModule,
   ],
   controllers: [AppController],
 })

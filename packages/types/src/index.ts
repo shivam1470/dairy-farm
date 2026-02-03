@@ -373,3 +373,112 @@ export interface ExpenseSummary {
   category: ExpenseCategory;
   total: number;
 }
+
+// Payment Types
+export interface Payment {
+  id: string;
+  type: PaymentType;
+  category: PaymentCategory;
+  amount: number;
+  description: string;
+  date: Date;
+  paymentMethod: PaymentMethod;
+  farmId: string;
+  referenceId?: string;
+  referenceType?: ReferenceType;
+  notes?: string;
+  createdById: string;
+  creator?: {
+    name: string;
+    email: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum PaymentType {
+  INCOME = 'INCOME',
+  EXPENSE = 'EXPENSE',
+}
+
+export enum PaymentCategory {
+  MILK_SALES = 'MILK_SALES',
+  ANIMAL_SALES = 'ANIMAL_SALES',
+  FEED = 'FEED',
+  MEDICINE = 'MEDICINE',
+  EQUIPMENT = 'EQUIPMENT',
+  LABOR = 'LABOR',
+  UTILITIES = 'UTILITIES',
+  MAINTENANCE = 'MAINTENANCE',
+  VETERINARY = 'VETERINARY',
+  TRANSPORT = 'TRANSPORT',
+  INVESTMENT = 'INVESTMENT',
+  OTHER_INCOME = 'OTHER_INCOME',
+  OTHER_EXPENSE = 'OTHER_EXPENSE',
+}
+
+export enum PaymentMethod {
+  CASH = 'CASH',
+  CARD = 'CARD',
+  UPI = 'UPI',
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  CHEQUE = 'CHEQUE',
+}
+
+export enum ReferenceType {
+  EXPENSE = 'EXPENSE',
+  DELIVERY = 'DELIVERY',
+  VET_VISIT = 'VET_VISIT',
+  FEEDING_LOG = 'FEEDING_LOG',
+  OTHER = 'OTHER',
+}
+
+export interface CreatePaymentDto {
+  type: PaymentType;
+  category: PaymentCategory;
+  amount: number;
+  description: string;
+  date: string;
+  paymentMethod: PaymentMethod;
+  farmId: string;
+  referenceId?: string;
+  referenceType?: ReferenceType;
+  notes?: string;
+}
+
+export interface UpdatePaymentDto {
+  type?: PaymentType;
+  category?: PaymentCategory;
+  amount?: number;
+  description?: string;
+  date?: string;
+  paymentMethod?: PaymentMethod;
+  referenceId?: string;
+  referenceType?: ReferenceType;
+  notes?: string;
+}
+
+// Wallet Types
+export interface Wallet {
+  id: string;
+  farmId: string;
+  currentBalance: number;
+  lastUpdated: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface WalletSummary {
+  id: string;
+  farmId: string;
+  currentBalance: number;
+  lastUpdated: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  recentTransactions: Payment[];
+  monthlySummary: {
+    income: number;
+    expenses: number;
+    net: number;
+  };
+}

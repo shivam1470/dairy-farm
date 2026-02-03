@@ -28,6 +28,7 @@ model User {
   assignedTasks     Task[]        @relation("TaskAssignee")
   recordedFeeding   FeedingLog[]  @relation("FeedingRecorder")
   assignedMilestones DevelopmentMilestone[] @relation("MilestoneAssignee")
+  createdPayments   Payment[]     @relation("PaymentCreator")
 
   @@map("users")
 }
@@ -59,6 +60,8 @@ model Farm {
   tasks             Task[]
   deliveries        DeliveryLog[]
   developmentPhases FarmDevelopmentPhase[]
+  payments          Payment[]
+  wallet            Wallet?
 
   @@map("farms")
 }
@@ -461,4 +464,68 @@ enum MilestoneStatus {
   IN_PROGRESS
   COMPLETED
   BLOCKED
+}
+
+model Payment {
+  id            String         @id @default(cuid())
+  farmId        String
+  farm          Farm           @relation(fields: [farmId], references: [id])
+  type          PaymentType
+  category      PaymentCategory
+  amount        Float
+  description   String
+  date          DateTime
+  paymentMethod PaymentMethod  @default(CASH)
+  referenceId   String?        // Reference to related entity (expense, delivery, etc.)
+  referenceType ReferenceType? // Type of referenced entity
+  notes         String?
+  createdById   String
+  creator       User           @relation("PaymentCreator", fields: [createdById], references: [id])
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([farmId])
+  @@index([date])
+  @@map("payments")
+}
+
+enum PaymentType {
+  INCOME
+  EXPENSE
+}
+
+enum PaymentCategory {
+  MILK_SALES
+  ANIMAL_SALES
+  FEED
+  MEDICINE
+  EQUIPMENT
+  LABOR
+  UTILITIES
+  MAINTENANCE
+  VETERINARY
+  TRANSPORT
+  INVESTMENT
+  OTHER_INCOME
+  OTHER_EXPENSE
+}
+
+enum ReferenceType {
+  EXPENSE
+  DELIVERY
+  VET_VISIT
+  FEEDING_LOG
+  OTHER
+}
+
+model Wallet {
+  id             String   @id @default(cuid())
+  farmId         String   @unique
+  farm           Farm     @relation(fields: [farmId], references: [id])
+  currentBalance Float    @default(0)
+  lastUpdated    DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("wallets")
 }
