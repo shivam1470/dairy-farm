@@ -12,7 +12,6 @@ export const menuItems: MenuItem[] = [
   { text: 'Milk Records', path: '/milk-records', icon: 'Opacity' },
   { text: 'Expenses', path: '/expenses', icon: 'AttachMoney' },
   { text: 'Payments', path: '/payments', icon: 'Payment' },
-  { text: 'Wallet', path: '/wallet', icon: 'AccountBalanceWallet' },
   { text: 'Workers', path: '/workers', icon: 'People' },
   { text: 'Tasks', path: '/tasks', icon: 'Assignment' },
   { text: 'Deliveries', path: '/deliveries', icon: 'LocalShipping' },
