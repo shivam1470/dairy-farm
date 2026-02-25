@@ -13,12 +13,11 @@ import {
 import {
   CalendarToday,
   AttachMoney,
-  Notes,
   Payment as PaymentIcon,
   Category,
   AccountBalanceWallet,
 } from '@mui/icons-material';
-import { Payment, PaymentType, PaymentCategory, PaymentMethod } from '@dairy-farm/types';
+import { Payment, PaymentType } from '@dairy-farm/types';
 
 interface PaymentDetailsProps {
   payment: Payment;

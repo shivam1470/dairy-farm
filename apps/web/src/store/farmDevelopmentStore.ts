@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import {
   FarmDevelopmentPhase,
-  DevelopmentMilestone,
   CreatePhaseDto,
   UpdatePhaseDto,
   CreateMilestoneDto,
@@ -28,22 +27,22 @@ interface FarmDevelopmentState {
   error: string | null;
 
   // Phase actions
-  fetchPhases: (farmId: string) => Promise<void>;
-  fetchPhase: (id: string) => Promise<void>;
-  addPhase: (data: CreatePhaseDto) => Promise<void>;
-  updatePhaseData: (id: string, data: UpdatePhaseDto) => Promise<void>;
-  removePhase: (id: string) => Promise<void>;
-  setSelectedPhase: (phase: FarmDevelopmentPhase | null) => void;
+  fetchPhases: (_farmId: string) => Promise<void>;
+  fetchPhase: (_id: string) => Promise<void>;
+  addPhase: (_data: CreatePhaseDto) => Promise<void>;
+  updatePhaseData: (_id: string, _data: UpdatePhaseDto) => Promise<void>;
+  removePhase: (_id: string) => Promise<void>;
+  setSelectedPhase: (_phase: FarmDevelopmentPhase | null) => void;
 
   // Milestone actions
-  fetchMilestones: (phaseId: string) => Promise<void>;
-  addMilestone: (phaseId: string, data: CreateMilestoneDto) => Promise<void>;
-  updateMilestoneData: (id: string, data: UpdateMilestoneDto) => Promise<void>;
-  completeMilestoneAction: (id: string) => Promise<void>;
-  removeMilestone: (id: string) => Promise<void>;
+  fetchMilestones: (_phaseId: string) => Promise<void>;
+  addMilestone: (_phaseId: string, _data: CreateMilestoneDto) => Promise<void>;
+  updateMilestoneData: (_id: string, _data: UpdateMilestoneDto) => Promise<void>;
+  completeMilestoneAction: (_id: string) => Promise<void>;
+  removeMilestone: (_id: string) => Promise<void>;
 
   // Progress actions
-  fetchProgressStats: (farmId: string) => Promise<void>;
+  fetchProgressStats: (_farmId: string) => Promise<void>;
 
   // Utility
   clearError: () => void;

@@ -12,9 +12,8 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Fab,
 } from '@mui/material';
-import { Add, Warning } from '@mui/icons-material';
+import { Warning } from '@mui/icons-material';
 import { Payment, Wallet } from '@dairy-farm/types';
 import { paymentsApi, walletApi } from '@/lib/payments-api';
 import { useAuthStore } from '@/store/authStore';
@@ -99,13 +98,7 @@ const Payments: React.FC = () => {
     setFormOpen(true);
   }, []);
 
-  // Handle view payment details
-  const handleViewPayment = useCallback((payment: Payment) => {
-    setSelectedPayment(payment);
-    setDetailsOpen(true);
-  }, []);
 
-  // Handle delete payment
   const handleDeletePayment = useCallback((paymentId: string) => {
     const payment = [...incomePayments, ...expensePayments].find(p => p.id === paymentId);
     if (payment) {

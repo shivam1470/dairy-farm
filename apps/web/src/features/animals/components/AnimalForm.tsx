@@ -22,7 +22,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Formik, Form, Field, FieldProps } from 'formik';
-import { Animal, CreateAnimalDto, AnimalGender, AnimalType, LifeStage, AnimalStatus, AnimalAcquisitionType } from '@dairy-farm/types';
+import { Animal, CreateAnimalDto, AnimalAcquisitionType } from '@dairy-farm/types';
 import { animalsApi } from '@/lib/animals-api';
 import { animalValidationSchema, defaultAnimalValues, genderOptions, typeOptions, lifeStageOptions, statusOptions, acquisitionTypeOptions } from '../constant';
 

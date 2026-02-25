@@ -162,7 +162,7 @@ export default function LoginPage() {
 
           <Box sx={{ mt: 3, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/register" sx={{ color: 'primary.main', fontWeight: 600, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
                 Sign Up Here
               </Link>

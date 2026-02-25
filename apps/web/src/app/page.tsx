@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Container, Typography, Button } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import { useAuthStore } from '@/store/authStore';
 
 export default function HomePage() {

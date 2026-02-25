@@ -94,7 +94,7 @@ export class FarmDevelopmentService {
   }
 
   async updatePhase(id: string, data: UpdatePhaseDto) {
-    const phase = await this.getPhaseById(id);
+    // const phase = await this.getPhaseById(id); // Not needed for update
 
     const updateData: any = {};
     if (data.phaseName !== undefined) updateData.phaseName = data.phaseName;
@@ -140,7 +140,7 @@ export class FarmDevelopmentService {
 
   // Milestone CRUD Operations
   async createMilestone(phaseId: string, data: CreateMilestoneDto) {
-    const phase = await this.getPhaseById(phaseId);
+    // const phase = await this.getPhaseById(phaseId); // Not needed for creation
 
     const milestone = await this.prisma.developmentMilestone.create({
       data: {

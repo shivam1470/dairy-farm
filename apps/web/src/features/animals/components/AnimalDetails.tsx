@@ -24,7 +24,7 @@ import {
   Category,
   Wc,
 } from '@mui/icons-material';
-import { Animal, AnimalStatus, AnimalType, LifeStage, AnimalGender } from '@dairy-farm/types';
+import { Animal, AnimalGender } from '@dairy-farm/types';
 import { getStatusColor, formatDate, calculateAge } from '../constant';
 
 interface AnimalDetailsProps {
