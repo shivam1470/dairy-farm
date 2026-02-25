@@ -104,6 +104,10 @@ postgres-data/
 # Expo (Mobile)
 # ========================
 .expo/
+
+# Playwright
+playwright-report/
+test-results/
 .expo-shared/
 expo-dev-client/
 web-build/
