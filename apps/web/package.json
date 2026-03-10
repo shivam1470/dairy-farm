@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@dairy-farm/api-client": "workspace:*",
     "@dairy-farm/types": "workspace:*",
     "@dairy-farm/ui": "workspace:*",
     "@emotion/react": "^11.11.1",

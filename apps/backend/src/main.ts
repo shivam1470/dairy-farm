@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -30,6 +31,26 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // Swagger / OpenAPI (free) — used for docs and for generating a typed API client.
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Dairy Farm API')
+    .setDescription('Dairy Farm Management API')
+    .setVersion('1.0.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        in: 'header',
+      },
+      'bearer',
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document);
 
   const port = process.env.PORT || 3001;
   await app.listen(port);

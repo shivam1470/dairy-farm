@@ -22,7 +22,7 @@ import {
   Lock,
   Agriculture,
 } from '@mui/icons-material';
-import apiClient from '@/lib/api';
+import { api } from '@/lib/api-client';
 import { useAuthStore } from '@/store/authStore';
 
 export default function LoginPage() {
@@ -40,12 +40,19 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await apiClient.post('/auth/login', { email, password });
-      const { accessToken, user } = response.data;
+      const { data, error } = await api.POST('/auth/login', {
+        body: { email, password },
+      });
+
+      if (error || !data) {
+        throw new Error('Login failed');
+      }
+
+      const { accessToken, user } = data as any;
       setAuth(user, accessToken);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
