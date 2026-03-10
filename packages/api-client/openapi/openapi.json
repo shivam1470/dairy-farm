@@ -50,9 +50,19 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/auth/login": {
@@ -70,10 +80,20 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/auth/me": {
@@ -82,9 +102,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/users": {
@@ -143,9 +173,19 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimalDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "animals"
+        ]
       },
       "get": {
         "operationId": "AnimalsController_findAll",
@@ -161,9 +201,22 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnimalDto"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "animals"
+        ]
       }
     },
     "/animals/{id}": {
@@ -181,9 +234,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimalDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "animals"
+        ]
       },
       "patch": {
         "operationId": "AnimalsController_update",
@@ -199,9 +262,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimalDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "animals"
+        ]
       },
       "delete": {
         "operationId": "AnimalsController_remove",
@@ -217,9 +290,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimalDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "animals"
+        ]
       }
     },
     "/milk-records": {
@@ -832,9 +915,22 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FarmDevelopmentPhaseDto"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       },
       "post": {
         "operationId": "FarmDevelopmentController_createPhase",
@@ -851,9 +947,19 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDevelopmentPhaseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       }
     },
     "/farm-development/phases/{id}": {
@@ -871,9 +977,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDevelopmentPhaseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       },
       "patch": {
         "operationId": "FarmDevelopmentController_updatePhase",
@@ -899,9 +1015,19 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDevelopmentPhaseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       },
       "delete": {
         "operationId": "FarmDevelopmentController_deletePhase",
@@ -917,9 +1043,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDevelopmentPhaseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       }
     },
     "/farm-development/phases/{phaseId}/milestones": {
@@ -937,9 +1073,22 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FarmDevelopmentMilestoneDto"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       },
       "post": {
         "operationId": "FarmDevelopmentController_createMilestone",
@@ -965,9 +1114,19 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDevelopmentMilestoneDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       }
     },
     "/farm-development/milestones/{id}": {
@@ -985,9 +1144,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDevelopmentMilestoneDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       },
       "patch": {
         "operationId": "FarmDevelopmentController_updateMilestone",
@@ -1013,9 +1182,19 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDevelopmentMilestoneDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       },
       "delete": {
         "operationId": "FarmDevelopmentController_deleteMilestone",
@@ -1031,9 +1210,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDevelopmentMilestoneDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       }
     },
     "/farm-development/milestones/{id}/complete": {
@@ -1051,9 +1240,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDevelopmentMilestoneDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       }
     },
     "/farm-development/progress": {
@@ -1073,7 +1272,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "farm-development"
+        ]
       }
     },
     "/payments": {
@@ -1092,9 +1294,19 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "payments"
+        ]
       },
       "get": {
         "operationId": "PaymentsController_findAll",
@@ -1110,9 +1322,22 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentDto"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/payments/income": {
@@ -1130,9 +1355,22 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentDto"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/payments/expenses": {
@@ -1150,9 +1388,22 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentDto"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/payments/{id}": {
@@ -1170,9 +1421,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "payments"
+        ]
       },
       "patch": {
         "operationId": "PaymentsController_update",
@@ -1198,9 +1459,19 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "payments"
+        ]
       },
       "delete": {
         "operationId": "PaymentsController_remove",
@@ -1216,9 +1487,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/wallet": {
@@ -1308,6 +1589,48 @@
           "name"
         ]
       },
+      "AuthUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "farmId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "role"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/AuthUserDto"
+          }
+        },
+        "required": [
+          "accessToken",
+          "user"
+        ]
+      },
       "LoginDto": {
         "type": "object",
         "properties": {
@@ -1327,31 +1650,805 @@
       },
       "CreateAnimalDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "tagNumber": {
+            "type": "string",
+            "example": "A-001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Gauri"
+          },
+          "breed": {
+            "type": "string",
+            "example": "Holstein"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "example": "2025-01-01"
+          },
+          "timeOfBirth": {
+            "type": "string",
+            "example": "09:30"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE"
+            ],
+            "example": "FEMALE"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "COW",
+              "BUFFALO"
+            ],
+            "example": "COW"
+          },
+          "lifeStage": {
+            "type": "string",
+            "enum": [
+              "CALF",
+              "HEIFER",
+              "ADULT"
+            ],
+            "example": "ADULT"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "PREGNANT",
+              "SICK",
+              "SOLD",
+              "DECEASED"
+            ],
+            "example": "ACTIVE"
+          },
+          "acquisitionType": {
+            "type": "string",
+            "enum": [
+              "BORN",
+              "PURCHASED"
+            ],
+            "example": "BORN",
+            "description": "How the animal was acquired (born, purchased, etc)."
+          },
+          "farmId": {
+            "type": "string",
+            "example": "farm_123"
+          },
+          "purchaseDate": {
+            "type": "string",
+            "example": "2025-02-15",
+            "description": "Required when acquisitionType is PURCHASED"
+          },
+          "purchasePrice": {
+            "type": "number",
+            "example": 45000
+          },
+          "purchaseFromName": {
+            "type": "string",
+            "example": "Ramesh Dairy"
+          },
+          "purchaseFromMobile": {
+            "type": "string",
+            "example": "9999999999"
+          },
+          "purchaseFromEmail": {
+            "type": "string",
+            "example": "seller@example.com"
+          },
+          "currentWeight": {
+            "type": "number",
+            "example": 350
+          },
+          "notes": {
+            "type": "string",
+            "example": "Healthy and vaccinated"
+          }
+        },
+        "required": [
+          "tagNumber",
+          "breed",
+          "dateOfBirth",
+          "gender",
+          "type",
+          "lifeStage",
+          "status",
+          "acquisitionType"
+        ]
+      },
+      "AnimalDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tagNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "breed": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timeOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "COW",
+              "BUFFALO"
+            ]
+          },
+          "lifeStage": {
+            "type": "string",
+            "enum": [
+              "CALF",
+              "HEIFER",
+              "ADULT"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "PREGNANT",
+              "SICK",
+              "SOLD",
+              "DECEASED"
+            ]
+          },
+          "acquisitionType": {
+            "type": "string",
+            "enum": [
+              "BORN",
+              "PURCHASED"
+            ]
+          },
+          "farmId": {
+            "type": "string"
+          },
+          "purchaseDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "purchasePrice": {
+            "type": "number"
+          },
+          "purchaseFromName": {
+            "type": "string"
+          },
+          "purchaseFromMobile": {
+            "type": "string"
+          },
+          "purchaseFromEmail": {
+            "type": "string"
+          },
+          "currentWeight": {
+            "type": "number"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "tagNumber",
+          "breed",
+          "dateOfBirth",
+          "gender",
+          "type",
+          "lifeStage",
+          "status",
+          "acquisitionType",
+          "farmId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "FarmDevelopmentPhaseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "farmId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "order": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PLANNING",
+              "LAND_ACQUISITION",
+              "INFRASTRUCTURE",
+              "EQUIPMENT_SETUP",
+              "ANIMAL_ACQUISITION",
+              "OPERATIONAL"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "targetDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "farmId",
+          "name",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "CreatePhaseDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "farmId": {
+            "type": "string",
+            "example": "farm_123"
+          },
+          "phaseName": {
+            "type": "string",
+            "example": "Shed Construction"
+          },
+          "description": {
+            "type": "string",
+            "example": "Build a new cattle shed with proper ventilation"
+          },
+          "phaseOrder": {
+            "type": "number",
+            "example": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NOT_STARTED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "ON_HOLD",
+              "CANCELLED"
+            ],
+            "example": "NOT_STARTED"
+          },
+          "progress": {
+            "type": "number",
+            "example": 0,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "budget": {
+            "type": "number",
+            "example": 250000
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2026-03-01"
+          },
+          "targetDate": {
+            "type": "string",
+            "example": "2026-05-01"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Contractor shortlisted"
+          }
+        },
+        "required": [
+          "farmId",
+          "phaseName"
+        ]
       },
       "UpdatePhaseDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "phaseName": {
+            "type": "string",
+            "example": "Shed Construction"
+          },
+          "description": {
+            "type": "string",
+            "example": "Updated description"
+          },
+          "phaseOrder": {
+            "type": "number",
+            "example": 2
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NOT_STARTED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "ON_HOLD",
+              "CANCELLED"
+            ],
+            "example": "IN_PROGRESS"
+          },
+          "progress": {
+            "type": "number",
+            "example": 25,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "budget": {
+            "type": "number",
+            "example": 300000
+          },
+          "actualCost": {
+            "type": "number",
+            "example": 50000
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2026-03-01"
+          },
+          "targetDate": {
+            "type": "string",
+            "example": "2026-05-01"
+          },
+          "completedDate": {
+            "type": "string",
+            "example": "2026-04-15"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Progress update notes"
+          }
+        }
+      },
+      "FarmDevelopmentMilestoneDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "farmId": {
+            "type": "string"
+          },
+          "phaseId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "order": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "BLOCKED"
+            ]
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "costEstimated": {
+            "type": "number"
+          },
+          "costActual": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "farmId",
+          "phaseId",
+          "title",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "CreateMilestoneDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Lay foundation"
+          },
+          "description": {
+            "type": "string",
+            "example": "Complete the shed foundation work"
+          },
+          "milestoneOrder": {
+            "type": "number",
+            "example": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "BLOCKED"
+            ],
+            "example": "PENDING"
+          },
+          "dueDate": {
+            "type": "string",
+            "example": "2026-03-20"
+          },
+          "assignedToId": {
+            "type": "string",
+            "example": "worker_123"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Call vendor for cement delivery"
+          }
+        },
+        "required": [
+          "title"
+        ]
       },
       "UpdateMilestoneDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Lay foundation"
+          },
+          "description": {
+            "type": "string",
+            "example": "Milestone details updated"
+          },
+          "milestoneOrder": {
+            "type": "number",
+            "example": 2
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "BLOCKED"
+            ],
+            "example": "COMPLETED"
+          },
+          "dueDate": {
+            "type": "string",
+            "example": "2026-03-20"
+          },
+          "completedDate": {
+            "type": "string",
+            "example": "2026-03-18"
+          },
+          "assignedToId": {
+            "type": "string",
+            "example": "worker_123"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Notes for the milestone"
+          }
+        }
       },
       "CreatePaymentDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "INCOME",
+              "EXPENSE"
+            ],
+            "example": "INCOME"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "MILK_SALES",
+              "ANIMAL_SALES",
+              "FEED",
+              "MEDICINE",
+              "EQUIPMENT",
+              "LABOR",
+              "UTILITIES",
+              "MAINTENANCE",
+              "VETERINARY",
+              "TRANSPORT",
+              "INVESTMENT",
+              "OTHER_INCOME",
+              "OTHER_EXPENSE"
+            ],
+            "example": "MILK_SALES"
+          },
+          "amount": {
+            "type": "number",
+            "example": 1200
+          },
+          "description": {
+            "type": "string",
+            "example": "Milk sale to local vendor"
+          },
+          "date": {
+            "type": "string",
+            "example": "2026-03-10"
+          },
+          "transactionDate": {
+            "type": "string",
+            "example": "2026-03-10"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "enum": [
+              "CASH",
+              "CARD",
+              "UPI",
+              "BANK_TRANSFER",
+              "CHEQUE"
+            ],
+            "example": "CASH"
+          },
+          "farmId": {
+            "type": "string",
+            "example": "farm_123"
+          },
+          "referenceId": {
+            "type": "string",
+            "example": "expense_123"
+          },
+          "referenceType": {
+            "type": "string",
+            "enum": [
+              "EXPENSE",
+              "DELIVERY",
+              "VET_VISIT",
+              "FEEDING_LOG",
+              "OTHER"
+            ],
+            "example": "OTHER"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Paid in cash at office"
+          }
+        },
+        "required": [
+          "type",
+          "category",
+          "amount",
+          "description",
+          "date",
+          "transactionDate",
+          "paymentMethod",
+          "farmId"
+        ]
+      },
+      "PaymentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "farmId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "INCOME",
+              "EXPENSE"
+            ]
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "CASH",
+              "CARD",
+              "UPI",
+              "BANK_TRANSFER",
+              "CHEQUE"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "PAID",
+              "PARTIAL",
+              "OVERDUE"
+            ]
+          },
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "payerName": {
+            "type": "string"
+          },
+          "payerMobile": {
+            "type": "string"
+          },
+          "payerEmail": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "farmId",
+          "type",
+          "method",
+          "status",
+          "amount",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdatePaymentDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "INCOME",
+              "EXPENSE"
+            ],
+            "example": "EXPENSE"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "MILK_SALES",
+              "ANIMAL_SALES",
+              "FEED",
+              "MEDICINE",
+              "EQUIPMENT",
+              "LABOR",
+              "UTILITIES",
+              "MAINTENANCE",
+              "VETERINARY",
+              "TRANSPORT",
+              "INVESTMENT",
+              "OTHER_INCOME",
+              "OTHER_EXPENSE"
+            ],
+            "example": "FEED"
+          },
+          "amount": {
+            "type": "number",
+            "example": 500
+          },
+          "description": {
+            "type": "string",
+            "example": "Updated description"
+          },
+          "date": {
+            "type": "string",
+            "example": "2026-03-10"
+          },
+          "transactionDate": {
+            "type": "string",
+            "example": "2026-03-10"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "enum": [
+              "CASH",
+              "CARD",
+              "UPI",
+              "BANK_TRANSFER",
+              "CHEQUE"
+            ],
+            "example": "UPI"
+          },
+          "referenceId": {
+            "type": "string",
+            "example": "expense_123"
+          },
+          "referenceType": {
+            "type": "string",
+            "enum": [
+              "EXPENSE",
+              "DELIVERY",
+              "VET_VISIT",
+              "FEEDING_LOG",
+              "OTHER"
+            ],
+            "example": "EXPENSE"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Updated notes"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "example": false
+          }
+        }
       }
     }
   }

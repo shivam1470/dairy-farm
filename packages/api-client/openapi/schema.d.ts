@@ -594,19 +594,340 @@ export interface components {
             /** @example My Dairy Farm */
             farmName?: string;
         };
+        AuthUserDto: {
+            id: string;
+            email: string;
+            name: string;
+            role: string;
+            farmId?: string | null;
+        };
+        AuthResponseDto: {
+            accessToken: string;
+            user: components["schemas"]["AuthUserDto"];
+        };
         LoginDto: {
             /** @example farmer@example.com */
             email: string;
             /** @example secret123 */
             password: string;
         };
-        CreateAnimalDto: Record<string, never>;
-        CreatePhaseDto: Record<string, never>;
-        UpdatePhaseDto: Record<string, never>;
-        CreateMilestoneDto: Record<string, never>;
-        UpdateMilestoneDto: Record<string, never>;
-        CreatePaymentDto: Record<string, never>;
-        UpdatePaymentDto: Record<string, never>;
+        CreateAnimalDto: {
+            /** @example A-001 */
+            tagNumber: string;
+            /** @example Gauri */
+            name?: string;
+            /** @example Holstein */
+            breed: string;
+            /** @example 2025-01-01 */
+            dateOfBirth: string;
+            /** @example 09:30 */
+            timeOfBirth?: string;
+            /**
+             * @example FEMALE
+             * @enum {string}
+             */
+            gender: "MALE" | "FEMALE";
+            /**
+             * @example COW
+             * @enum {string}
+             */
+            type: "COW" | "BUFFALO";
+            /**
+             * @example ADULT
+             * @enum {string}
+             */
+            lifeStage: "CALF" | "HEIFER" | "ADULT";
+            /**
+             * @example ACTIVE
+             * @enum {string}
+             */
+            status: "ACTIVE" | "PREGNANT" | "SICK" | "SOLD" | "DECEASED";
+            /**
+             * @description How the animal was acquired (born, purchased, etc).
+             * @example BORN
+             * @enum {string}
+             */
+            acquisitionType: "BORN" | "PURCHASED";
+            /** @example farm_123 */
+            farmId?: string;
+            /**
+             * @description Required when acquisitionType is PURCHASED
+             * @example 2025-02-15
+             */
+            purchaseDate?: string;
+            /** @example 45000 */
+            purchasePrice?: number;
+            /** @example Ramesh Dairy */
+            purchaseFromName?: string;
+            /** @example 9999999999 */
+            purchaseFromMobile?: string;
+            /** @example seller@example.com */
+            purchaseFromEmail?: string;
+            /** @example 350 */
+            currentWeight?: number;
+            /** @example Healthy and vaccinated */
+            notes?: string;
+        };
+        AnimalDto: {
+            id: string;
+            tagNumber: string;
+            name?: string;
+            breed: string;
+            /** Format: date-time */
+            dateOfBirth: string;
+            /** Format: date-time */
+            timeOfBirth?: string;
+            /** @enum {string} */
+            gender: "MALE" | "FEMALE";
+            /** @enum {string} */
+            type: "COW" | "BUFFALO";
+            /** @enum {string} */
+            lifeStage: "CALF" | "HEIFER" | "ADULT";
+            /** @enum {string} */
+            status: "ACTIVE" | "PREGNANT" | "SICK" | "SOLD" | "DECEASED";
+            /** @enum {string} */
+            acquisitionType: "BORN" | "PURCHASED";
+            farmId: string;
+            /** Format: date-time */
+            purchaseDate?: string;
+            purchasePrice?: number;
+            purchaseFromName?: string;
+            purchaseFromMobile?: string;
+            purchaseFromEmail?: string;
+            currentWeight?: number;
+            notes?: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        FarmDevelopmentPhaseDto: {
+            id: string;
+            farmId: string;
+            name: string;
+            description?: string;
+            order?: number;
+            /** @enum {string} */
+            status: "PLANNING" | "LAND_ACQUISITION" | "INFRASTRUCTURE" | "EQUIPMENT_SETUP" | "ANIMAL_ACQUISITION" | "OPERATIONAL";
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            /** Format: date-time */
+            targetDate?: string;
+            /** Format: date-time */
+            completedAt?: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        CreatePhaseDto: {
+            /** @example farm_123 */
+            farmId: string;
+            /** @example Shed Construction */
+            phaseName: string;
+            /** @example Build a new cattle shed with proper ventilation */
+            description?: string;
+            /** @example 1 */
+            phaseOrder?: number;
+            /**
+             * @example NOT_STARTED
+             * @enum {string}
+             */
+            status?: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "ON_HOLD" | "CANCELLED";
+            /** @example 0 */
+            progress?: number;
+            /** @example 250000 */
+            budget?: number;
+            /** @example 2026-03-01 */
+            startDate?: string;
+            /** @example 2026-05-01 */
+            targetDate?: string;
+            /** @example Contractor shortlisted */
+            notes?: string;
+        };
+        UpdatePhaseDto: {
+            /** @example Shed Construction */
+            phaseName?: string;
+            /** @example Updated description */
+            description?: string;
+            /** @example 2 */
+            phaseOrder?: number;
+            /**
+             * @example IN_PROGRESS
+             * @enum {string}
+             */
+            status?: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "ON_HOLD" | "CANCELLED";
+            /** @example 25 */
+            progress?: number;
+            /** @example 300000 */
+            budget?: number;
+            /** @example 50000 */
+            actualCost?: number;
+            /** @example 2026-03-01 */
+            startDate?: string;
+            /** @example 2026-05-01 */
+            targetDate?: string;
+            /** @example 2026-04-15 */
+            completedDate?: string;
+            /** @example Progress update notes */
+            notes?: string;
+        };
+        FarmDevelopmentMilestoneDto: {
+            id: string;
+            farmId: string;
+            phaseId: string;
+            title: string;
+            description?: string;
+            order?: number;
+            /** @enum {string} */
+            status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "BLOCKED";
+            /** Format: date-time */
+            dueDate?: string;
+            /** Format: date-time */
+            completedAt?: string;
+            costEstimated?: number;
+            costActual?: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        CreateMilestoneDto: {
+            /** @example Lay foundation */
+            title: string;
+            /** @example Complete the shed foundation work */
+            description?: string;
+            /** @example 1 */
+            milestoneOrder?: number;
+            /**
+             * @example PENDING
+             * @enum {string}
+             */
+            status?: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "BLOCKED";
+            /** @example 2026-03-20 */
+            dueDate?: string;
+            /** @example worker_123 */
+            assignedToId?: string;
+            /** @example Call vendor for cement delivery */
+            notes?: string;
+        };
+        UpdateMilestoneDto: {
+            /** @example Lay foundation */
+            title?: string;
+            /** @example Milestone details updated */
+            description?: string;
+            /** @example 2 */
+            milestoneOrder?: number;
+            /**
+             * @example COMPLETED
+             * @enum {string}
+             */
+            status?: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "BLOCKED";
+            /** @example 2026-03-20 */
+            dueDate?: string;
+            /** @example 2026-03-18 */
+            completedDate?: string;
+            /** @example worker_123 */
+            assignedToId?: string;
+            /** @example Notes for the milestone */
+            notes?: string;
+        };
+        CreatePaymentDto: {
+            /**
+             * @example INCOME
+             * @enum {string}
+             */
+            type: "INCOME" | "EXPENSE";
+            /**
+             * @example MILK_SALES
+             * @enum {string}
+             */
+            category: "MILK_SALES" | "ANIMAL_SALES" | "FEED" | "MEDICINE" | "EQUIPMENT" | "LABOR" | "UTILITIES" | "MAINTENANCE" | "VETERINARY" | "TRANSPORT" | "INVESTMENT" | "OTHER_INCOME" | "OTHER_EXPENSE";
+            /** @example 1200 */
+            amount: number;
+            /** @example Milk sale to local vendor */
+            description: string;
+            /** @example 2026-03-10 */
+            date: string;
+            /** @example 2026-03-10 */
+            transactionDate: string;
+            /**
+             * @example CASH
+             * @enum {string}
+             */
+            paymentMethod: "CASH" | "CARD" | "UPI" | "BANK_TRANSFER" | "CHEQUE";
+            /** @example farm_123 */
+            farmId: string;
+            /** @example expense_123 */
+            referenceId?: string;
+            /**
+             * @example OTHER
+             * @enum {string}
+             */
+            referenceType?: "EXPENSE" | "DELIVERY" | "VET_VISIT" | "FEEDING_LOG" | "OTHER";
+            /** @example Paid in cash at office */
+            notes?: string;
+        };
+        PaymentDto: {
+            id: string;
+            farmId: string;
+            /** @enum {string} */
+            type: "INCOME" | "EXPENSE";
+            /** @enum {string} */
+            method: "CASH" | "CARD" | "UPI" | "BANK_TRANSFER" | "CHEQUE";
+            /** @enum {string} */
+            status: "PENDING" | "PAID" | "PARTIAL" | "OVERDUE";
+            amount: number;
+            description?: string;
+            /** Format: date-time */
+            date?: string;
+            reference?: string;
+            payerName?: string;
+            payerMobile?: string;
+            payerEmail?: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        UpdatePaymentDto: {
+            /**
+             * @example EXPENSE
+             * @enum {string}
+             */
+            type?: "INCOME" | "EXPENSE";
+            /**
+             * @example FEED
+             * @enum {string}
+             */
+            category?: "MILK_SALES" | "ANIMAL_SALES" | "FEED" | "MEDICINE" | "EQUIPMENT" | "LABOR" | "UTILITIES" | "MAINTENANCE" | "VETERINARY" | "TRANSPORT" | "INVESTMENT" | "OTHER_INCOME" | "OTHER_EXPENSE";
+            /** @example 500 */
+            amount?: number;
+            /** @example Updated description */
+            description?: string;
+            /** @example 2026-03-10 */
+            date?: string;
+            /** @example 2026-03-10 */
+            transactionDate?: string;
+            /**
+             * @example UPI
+             * @enum {string}
+             */
+            paymentMethod?: "CASH" | "CARD" | "UPI" | "BANK_TRANSFER" | "CHEQUE";
+            /** @example expense_123 */
+            referenceId?: string;
+            /**
+             * @example EXPENSE
+             * @enum {string}
+             */
+            referenceType?: "EXPENSE" | "DELIVERY" | "VET_VISIT" | "FEEDING_LOG" | "OTHER";
+            /** @example Updated notes */
+            notes?: string;
+            /** @example false */
+            isDeleted?: boolean;
+        };
     };
     responses: never;
     parameters: never;
@@ -684,7 +1005,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AuthResponseDto"];
+                };
             };
         };
     };
@@ -701,11 +1024,13 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AuthResponseDto"];
+                };
             };
         };
     };
@@ -722,7 +1047,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AuthUserDto"];
+                };
             };
         };
     };
@@ -779,7 +1106,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AnimalDto"][];
+                };
             };
         };
     };
@@ -800,7 +1129,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AnimalDto"];
+                };
             };
         };
     };
@@ -819,7 +1150,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AnimalDto"];
+                };
             };
         };
     };
@@ -838,7 +1171,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AnimalDto"];
+                };
             };
         };
     };
@@ -857,7 +1192,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AnimalDto"];
+                };
             };
         };
     };
@@ -1527,7 +1864,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentPhaseDto"][];
+                };
             };
         };
     };
@@ -1548,7 +1887,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentPhaseDto"];
+                };
             };
         };
     };
@@ -1567,7 +1908,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentPhaseDto"];
+                };
             };
         };
     };
@@ -1586,7 +1929,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentPhaseDto"];
+                };
             };
         };
     };
@@ -1609,7 +1954,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentPhaseDto"];
+                };
             };
         };
     };
@@ -1628,7 +1975,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentMilestoneDto"][];
+                };
             };
         };
     };
@@ -1651,7 +2000,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentMilestoneDto"];
+                };
             };
         };
     };
@@ -1670,7 +2021,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentMilestoneDto"];
+                };
             };
         };
     };
@@ -1689,7 +2042,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentMilestoneDto"];
+                };
             };
         };
     };
@@ -1712,7 +2067,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentMilestoneDto"];
+                };
             };
         };
     };
@@ -1731,7 +2088,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FarmDevelopmentMilestoneDto"];
+                };
             };
         };
     };
@@ -1769,7 +2128,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"][];
+                };
             };
         };
     };
@@ -1790,7 +2151,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
             };
         };
     };
@@ -1809,7 +2172,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"][];
+                };
             };
         };
     };
@@ -1828,7 +2193,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"][];
+                };
             };
         };
     };
@@ -1847,7 +2214,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
             };
         };
     };
@@ -1866,7 +2235,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
             };
         };
     };
@@ -1889,7 +2260,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
             };
         };
     };
