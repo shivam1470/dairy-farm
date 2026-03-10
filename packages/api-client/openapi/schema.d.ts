@@ -196,38 +196,6 @@ export interface paths {
         patch: operations["MilkRecordsController_update"];
         trace?: never;
     };
-    "/expenses": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["ExpensesController_findAll"];
-        put?: never;
-        post: operations["ExpensesController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/expenses/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["ExpensesController_findOne"];
-        put?: never;
-        post?: never;
-        delete: operations["ExpensesController_remove"];
-        options?: never;
-        head?: never;
-        patch: operations["ExpensesController_update"];
-        trace?: never;
-    };
     "/workers": {
         parameters: {
             query?: never;
@@ -736,6 +704,349 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+        };
+        CreateWorkerDto: {
+            /** @example farm_123 */
+            farmId: string;
+            /** @example Ravi Kumar */
+            name: string;
+            /** @example 9999999999 */
+            contactNumber: string;
+            /** @example ravi@example.com */
+            email?: string;
+            /** @example Village Road, District */
+            address?: string;
+            /** @enum {string} */
+            role: "MANAGER" | "SUPERVISOR" | "MILKER" | "FEEDER" | "CLEANER" | "DRIVER" | "VETERINARIAN" | "OTHER";
+            /** @enum {string} */
+            shift: "MORNING" | "EVENING" | "NIGHT" | "DAY" | "FULL_TIME";
+            /** @example 15000 */
+            salary: number;
+            /** @example 2026-01-15 */
+            joinDate: string;
+            /** @enum {string} */
+            status: "ACTIVE" | "ON_LEAVE" | "RESIGNED" | "TERMINATED";
+            /** @example Good with cattle handling */
+            notes?: string;
+        };
+        WorkerDto: {
+            id: string;
+            farmId: string;
+            name: string;
+            contactNumber: string;
+            email?: string;
+            address?: string;
+            /** @enum {string} */
+            role: "MANAGER" | "SUPERVISOR" | "MILKER" | "FEEDER" | "CLEANER" | "DRIVER" | "VETERINARIAN" | "OTHER";
+            /** @enum {string} */
+            shift: "MORNING" | "EVENING" | "NIGHT" | "DAY" | "FULL_TIME";
+            salary: number;
+            /** Format: date-time */
+            joinDate: string;
+            /** @enum {string} */
+            status: "ACTIVE" | "ON_LEAVE" | "RESIGNED" | "TERMINATED";
+            notes?: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        UpdateWorkerDto: {
+            /** @example farm_123 */
+            farmId?: string;
+            /** @example Ravi Kumar */
+            name?: string;
+            /** @example 9999999999 */
+            contactNumber?: string;
+            /** @example ravi@example.com */
+            email?: string;
+            /** @example Village Road, District */
+            address?: string;
+            /** @enum {string} */
+            role?: "MANAGER" | "SUPERVISOR" | "MILKER" | "FEEDER" | "CLEANER" | "DRIVER" | "VETERINARIAN" | "OTHER";
+            /** @enum {string} */
+            shift?: "MORNING" | "EVENING" | "NIGHT" | "DAY" | "FULL_TIME";
+            /** @example 15000 */
+            salary?: number;
+            /** @example 2026-01-15 */
+            joinDate?: string;
+            /** @enum {string} */
+            status?: "ACTIVE" | "ON_LEAVE" | "RESIGNED" | "TERMINATED";
+            /** @example Good with cattle handling */
+            notes?: string;
+        };
+        CreateTaskDto: {
+            /** @example farm_123 */
+            farmId: string;
+            /** @example Clean shed */
+            title: string;
+            /** @example Clean and disinfect the main shed */
+            description?: string;
+            /** @example worker_123 */
+            assignedToId?: string;
+            /** @example 2026-03-12 */
+            dueDate: string;
+            /** @enum {string} */
+            priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+            /** @enum {string} */
+            status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+            /** @example Use the new disinfectant */
+            notes?: string;
+            /** @example user_123 */
+            createdById: string;
+        };
+        TaskDto: {
+            id: string;
+            farmId: string;
+            title: string;
+            description?: string;
+            assignedToId?: string;
+            /** Format: date-time */
+            dueDate: string;
+            /** @enum {string} */
+            priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+            /** @enum {string} */
+            status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+            notes?: string;
+            createdById: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        UpdateTaskDto: {
+            /** @example farm_123 */
+            farmId?: string;
+            /** @example Clean shed */
+            title?: string;
+            /** @example Clean and disinfect the main shed */
+            description?: string;
+            /** @example worker_123 */
+            assignedToId?: string;
+            /** @example 2026-03-12 */
+            dueDate?: string;
+            /** @enum {string} */
+            priority?: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+            /** @enum {string} */
+            status?: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+            /** @example Use the new disinfectant */
+            notes?: string;
+            /** @example user_123 */
+            createdById?: string;
+        };
+        CreateFeedingLogDto: {
+            /** @example farm_123 */
+            farmId: string;
+            /** @example animal_123 */
+            animalId: string;
+            /** @example 2026-03-10 */
+            date: string;
+            /** @enum {string} */
+            feedingTime: "MORNING" | "AFTERNOON" | "EVENING";
+            /** @enum {string} */
+            feedType: "HAY" | "SILAGE" | "CONCENTRATE" | "GRAINS" | "MINERAL_SUPPLEMENTS" | "FRESH_GRASS";
+            /** @example 5 */
+            quantity: number;
+            /** @example 200 */
+            cost?: number;
+            /** @example Added supplements */
+            notes?: string;
+            /** @example user_123 */
+            recordedById: string;
+        };
+        FeedingLogDto: {
+            id: string;
+            farmId: string;
+            animalId: string;
+            /** Format: date-time */
+            date: string;
+            /** @enum {string} */
+            feedingTime: "MORNING" | "AFTERNOON" | "EVENING";
+            /** @enum {string} */
+            feedType: "HAY" | "SILAGE" | "CONCENTRATE" | "GRAINS" | "MINERAL_SUPPLEMENTS" | "FRESH_GRASS";
+            quantity: number;
+            cost?: number;
+            notes?: string;
+            recordedById: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        UpdateFeedingLogDto: {
+            /** @example farm_123 */
+            farmId?: string;
+            /** @example animal_123 */
+            animalId?: string;
+            /** @example 2026-03-10 */
+            date?: string;
+            /** @enum {string} */
+            feedingTime?: "MORNING" | "AFTERNOON" | "EVENING";
+            /** @enum {string} */
+            feedType?: "HAY" | "SILAGE" | "CONCENTRATE" | "GRAINS" | "MINERAL_SUPPLEMENTS" | "FRESH_GRASS";
+            /** @example 5 */
+            quantity?: number;
+            /** @example 200 */
+            cost?: number;
+            /** @example Added supplements */
+            notes?: string;
+            /** @example user_123 */
+            recordedById?: string;
+        };
+        CreateDeliveryDto: {
+            /** @example farm_123 */
+            farmId: string;
+            /** @example 2026-03-10 */
+            deliveryDate: string;
+            /** @example Local Vendor */
+            buyerName: string;
+            /** @example 9999999999 */
+            buyerPhone?: string;
+            /** @example 50 */
+            quantity: number;
+            /** @example 45 */
+            pricePerLiter: number;
+            /** @example 2250 */
+            totalAmount: number;
+            /** @enum {string} */
+            deliveryStatus: "PENDING" | "DELIVERED" | "CANCELLED";
+            /** @enum {string} */
+            paymentStatus: "PENDING" | "PAID" | "PARTIAL" | "OVERDUE";
+            /** @example Market road address */
+            address?: string;
+            /** @example Delivered by worker A */
+            notes?: string;
+            /** @example user_123 */
+            createdById: string;
+        };
+        DeliveryDto: {
+            id: string;
+            farmId: string;
+            /** Format: date-time */
+            deliveryDate: string;
+            buyerName: string;
+            buyerPhone?: string;
+            quantity: number;
+            pricePerLiter: number;
+            totalAmount: number;
+            /** @enum {string} */
+            deliveryStatus: "PENDING" | "DELIVERED" | "CANCELLED";
+            /** @enum {string} */
+            paymentStatus: "PENDING" | "PAID" | "PARTIAL" | "OVERDUE";
+            address?: string;
+            notes?: string;
+            createdById: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        UpdateDeliveryDto: {
+            /** @example farm_123 */
+            farmId?: string;
+            /** @example 2026-03-10 */
+            deliveryDate?: string;
+            /** @example Local Vendor */
+            buyerName?: string;
+            /** @example 9999999999 */
+            buyerPhone?: string;
+            /** @example 50 */
+            quantity?: number;
+            /** @example 45 */
+            pricePerLiter?: number;
+            /** @example 2250 */
+            totalAmount?: number;
+            /** @enum {string} */
+            deliveryStatus?: "PENDING" | "DELIVERED" | "CANCELLED";
+            /** @enum {string} */
+            paymentStatus?: "PENDING" | "PAID" | "PARTIAL" | "OVERDUE";
+            /** @example Market road address */
+            address?: string;
+            /** @example Delivered by worker A */
+            notes?: string;
+            /** @example user_123 */
+            createdById?: string;
+        };
+        CreateVetVisitDto: {
+            /** @example animal_123 */
+            animalId: string;
+            /** @example 2026-03-10 */
+            visitDate: string;
+            /** @enum {string} */
+            visitType?: "ROUTINE" | "EMERGENCY" | "FOLLOWUP" | "VACCINATION" | "CHECKUP";
+            /** @example Routine checkup */
+            visitReason: string;
+            /** @enum {string} */
+            treatmentType?: "VACCINATION" | "MEDICATION" | "SURGERY" | "CHECKUP" | "DEWORMING" | "OTHER";
+            /** @example Mild fever */
+            diagnosis?: string;
+            /** @example Administered medication */
+            treatment?: string;
+            /** @example Paracetamol 2 days */
+            prescription?: string;
+            /** @example Dr. Sharma */
+            veterinarian: string;
+            /** @example 800 */
+            cost: number;
+            /** @enum {string} */
+            visitStatus: "SCHEDULED" | "COMPLETED" | "CANCELLED";
+            /** @example 2026-03-24 */
+            nextVisitDate?: string;
+            /** @example Follow-up required */
+            notes?: string;
+        };
+        VetVisitDto: {
+            id: string;
+            animalId: string;
+            /** Format: date-time */
+            visitDate: string;
+            /** @enum {string} */
+            visitType?: "ROUTINE" | "EMERGENCY" | "FOLLOWUP" | "VACCINATION" | "CHECKUP";
+            visitReason: string;
+            /** @enum {string} */
+            treatmentType?: "VACCINATION" | "MEDICATION" | "SURGERY" | "CHECKUP" | "DEWORMING" | "OTHER";
+            diagnosis?: string;
+            treatment?: string;
+            prescription?: string;
+            veterinarian: string;
+            cost: number;
+            /** @enum {string} */
+            visitStatus: "SCHEDULED" | "COMPLETED" | "CANCELLED";
+            /** Format: date-time */
+            nextVisitDate?: string;
+            notes?: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        UpdateVetVisitDto: {
+            /** @example animal_123 */
+            animalId?: string;
+            /** @example 2026-03-10 */
+            visitDate?: string;
+            /** @enum {string} */
+            visitType?: "ROUTINE" | "EMERGENCY" | "FOLLOWUP" | "VACCINATION" | "CHECKUP";
+            /** @example Routine checkup */
+            visitReason?: string;
+            /** @enum {string} */
+            treatmentType?: "VACCINATION" | "MEDICATION" | "SURGERY" | "CHECKUP" | "DEWORMING" | "OTHER";
+            /** @example Mild fever */
+            diagnosis?: string;
+            /** @example Administered medication */
+            treatment?: string;
+            /** @example Paracetamol 2 days */
+            prescription?: string;
+            /** @example Dr. Sharma */
+            veterinarian?: string;
+            /** @example 800 */
+            cost?: number;
+            /** @enum {string} */
+            visitStatus?: "SCHEDULED" | "COMPLETED" | "CANCELLED";
+            /** @example 2026-03-24 */
+            nextVisitDate?: string;
+            /** @example Follow-up required */
+            notes?: string;
         };
         FarmDevelopmentPhaseDto: {
             id: string;
@@ -1341,99 +1652,6 @@ export interface operations {
             };
         };
     };
-    ExpensesController_findAll: {
-        parameters: {
-            query: {
-                farmId: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ExpensesController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ExpensesController_findOne: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ExpensesController_remove: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ExpensesController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     WorkersController_findAll: {
         parameters: {
             query: {
@@ -1449,7 +1667,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WorkerDto"][];
+                };
             };
         };
     };
@@ -1460,13 +1680,19 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateWorkerDto"];
+            };
+        };
         responses: {
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WorkerDto"];
+                };
             };
         };
     };
@@ -1485,7 +1711,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WorkerDto"];
+                };
             };
         };
     };
@@ -1504,7 +1732,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WorkerDto"];
+                };
             };
         };
     };
@@ -1517,13 +1747,19 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateWorkerDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["WorkerDto"];
+                };
             };
         };
     };
@@ -1542,7 +1778,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TaskDto"][];
+                };
             };
         };
     };
@@ -1553,13 +1791,19 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTaskDto"];
+            };
+        };
         responses: {
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
             };
         };
     };
@@ -1578,7 +1822,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
             };
         };
     };
@@ -1597,7 +1843,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
             };
         };
     };
@@ -1610,13 +1858,19 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTaskDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
             };
         };
     };
@@ -1635,7 +1889,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FeedingLogDto"][];
+                };
             };
         };
     };
@@ -1646,13 +1902,19 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFeedingLogDto"];
+            };
+        };
         responses: {
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FeedingLogDto"];
+                };
             };
         };
     };
@@ -1671,7 +1933,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FeedingLogDto"];
+                };
             };
         };
     };
@@ -1690,7 +1954,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FeedingLogDto"];
+                };
             };
         };
     };
@@ -1703,13 +1969,19 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFeedingLogDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["FeedingLogDto"];
+                };
             };
         };
     };
@@ -1728,7 +2000,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["DeliveryDto"][];
+                };
             };
         };
     };
@@ -1739,13 +2013,19 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateDeliveryDto"];
+            };
+        };
         responses: {
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["DeliveryDto"];
+                };
             };
         };
     };
@@ -1764,7 +2044,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["DeliveryDto"];
+                };
             };
         };
     };
@@ -1783,7 +2065,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["DeliveryDto"];
+                };
             };
         };
     };
@@ -1796,13 +2080,19 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateDeliveryDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["DeliveryDto"];
+                };
             };
         };
     };
@@ -1821,7 +2111,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["VetVisitDto"][];
+                };
             };
         };
     };
@@ -1832,13 +2124,19 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateVetVisitDto"];
+            };
+        };
         responses: {
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["VetVisitDto"];
+                };
             };
         };
     };
@@ -1857,7 +2155,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["VetVisitDto"];
+                };
             };
         };
     };
@@ -1876,7 +2176,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["VetVisitDto"];
+                };
             };
         };
     };
@@ -1889,13 +2191,19 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateVetVisitDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["VetVisitDto"];
+                };
             };
         };
     };

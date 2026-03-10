@@ -51,6 +51,10 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
+  // Serve raw OpenAPI JSON at the conventional path used by tooling/scripts.
+  // (SwaggerModule.setup is intended for Swagger UI; for JSON we expose an explicit route.)
+  const httpAdapter = app.getHttpAdapter();
+  httpAdapter.get('/api-json', (req, res) => res.json(document));
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
