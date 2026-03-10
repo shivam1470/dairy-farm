@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const API_PORT = process.env.API_PORT ? Number(process.env.API_PORT) : 3001;
 
 export default defineConfig({
   testDir: './e2e',
@@ -24,10 +25,18 @@ export default defineConfig({
   ],
   webServer: process.env.PLAYWRIGHT_SKIP_WEB_SERVER
     ? undefined
-    : {
-        command: 'pnpm --filter @dairy-farm/web dev --port 3000',
-        url: `http://localhost:${PORT}`,
-        reuseExistingServer: !process.env.CI,
-        timeout: 120_000,
-      },
+    : [
+        {
+          command: `pnpm --filter @dairy-farm/backend dev`,
+          url: `http://127.0.0.1:${API_PORT}/health`,
+          reuseExistingServer: !process.env.CI,
+          timeout: 120_000,
+        },
+        {
+          command: 'pnpm --filter @dairy-farm/web dev --port 3000',
+          url: `http://localhost:${PORT}`,
+          reuseExistingServer: !process.env.CI,
+          timeout: 120_000,
+        },
+      ],
 });

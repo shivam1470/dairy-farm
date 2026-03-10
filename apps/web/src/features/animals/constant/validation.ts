@@ -78,11 +78,15 @@ export const animalValidationSchema = Yup.object({
     }),
 
   purchaseFromMobile: Yup.string()
+    .nullable()
+    .transform((value) => (value === '' ? null : value))
     .optional()
     .matches(/^[0-9+\-\s()]+$/, 'Invalid mobile number format')
     .max(20, 'Mobile number cannot exceed 20 characters'),
 
   purchaseFromEmail: Yup.string()
+    .nullable()
+    .transform((value) => (value === '' ? null : value))
     .optional()
     .email('Invalid email format')
     .max(100, 'Email cannot exceed 100 characters'),

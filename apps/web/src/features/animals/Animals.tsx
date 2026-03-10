@@ -153,6 +153,7 @@ const Animals: React.FC = () => {
 
       {/* Animal Form Dialog */}
       <AnimalForm
+        key={`${formOpen ? 'open' : 'closed'}-${selectedAnimal?.id ?? 'new'}`}
         open={formOpen}
         onClose={handleCloseForm}
         onSuccess={handleFormSuccess}

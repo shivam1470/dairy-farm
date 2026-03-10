@@ -42,6 +42,10 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
     farmId,
   };
 
+  // Force a fresh Formik instance when switching between create/edit or opening a different animal.
+  // This prevents stale values from a previous session showing up when adding a new animal.
+  const formKey = animal ? `edit-${animal.id}` : `create-${farmId}`;
+
   const getInitialValues = (): CreateAnimalDto => {
     if (animal) {
       return {
@@ -69,10 +73,19 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
   const handleSubmit = async (values: CreateAnimalDto, { setSubmitting, setStatus }: any) => {
     console.log('Submitting values:', values);
     try {
+      // Normalize optional string fields: backend class-validator treats empty string as a value.
+      // For fields like purchaseFromEmail with @IsEmail(), '' fails validation. Omit empty strings.
+      const normalizedValues: CreateAnimalDto = {
+        ...values,
+        purchaseFromName: values.purchaseFromName?.trim() ? values.purchaseFromName : undefined,
+        purchaseFromMobile: values.purchaseFromMobile?.trim() ? values.purchaseFromMobile : undefined,
+        purchaseFromEmail: values.purchaseFromEmail?.trim() ? values.purchaseFromEmail : undefined,
+      };
+
       if (animal) {
-        await animalsApi.update(animal.id, values);
+        await animalsApi.update(animal.id, normalizedValues);
       } else {
-        await animalsApi.create(values);
+        await animalsApi.create(normalizedValues);
       }
       onSuccess();
       onClose();
@@ -86,13 +99,14 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Formik
+        key={formKey}
         initialValues={getInitialValues()}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitialize
       >
         {({ isSubmitting, status, values, setFieldValue, errors, touched }) => (
-          <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+          <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth keepMounted={false}>
             <Form>
               <DialogTitle>
                 {animal ? 'Edit Animal' : 'Add New Animal'}
@@ -115,6 +129,8 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                             {...field}
                             label="How did you acquire this animal?"
                             error={touched.acquisitionType && Boolean(errors.acquisitionType)}
+                            data-testid="animal-acquisition-type"
+                            inputProps={{ 'data-testid': 'animal-acquisition-type-input' }}
                             sx={{
                               '& .MuiSelect-select': {
                                 display: 'flex',
@@ -160,6 +176,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                           fullWidth
                           label="Tag Number *"
                           required
+                          inputProps={{ 'data-testid': 'animal-tag-number' }}
                           error={touched.tagNumber && Boolean(errors.tagNumber)}
                           helperText={(touched.tagNumber && errors.tagNumber) || "Unique identifier for the animal"}
                         />
@@ -187,6 +204,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                           fullWidth
                           label="Breed *"
                           required
+                          inputProps={{ 'data-testid': 'animal-breed' }}
                           error={touched.breed && Boolean(errors.breed)}
                           helperText={touched.breed && errors.breed}
                         />
@@ -214,6 +232,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                             textField: {
                               fullWidth: true,
                               required: true,
+                              inputProps: { 'data-testid': 'animal-dateOfBirth' },
                               error: touched.dateOfBirth && Boolean(errors.dateOfBirth),
                               helperText: touched.dateOfBirth && errors.dateOfBirth ? String(errors.dateOfBirth) : undefined,
                             },
@@ -229,6 +248,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                           slotProps={{
                             textField: {
                               fullWidth: true,
+                              inputProps: { 'data-testid': 'animal-timeOfBirth' },
                               error: touched.timeOfBirth && Boolean(errors.timeOfBirth),
                               helperText: touched.timeOfBirth && errors.timeOfBirth ? String(errors.timeOfBirth) : undefined,
                             },
@@ -243,7 +263,12 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                       <InputLabel>Gender</InputLabel>
                       <Field name="gender">
                         {({ field }: FieldProps) => (
-                          <Select {...field} label="Gender">
+                          <Select
+                            {...field}
+                            label="Gender"
+                            data-testid="animal-gender"
+                            inputProps={{ 'data-testid': 'animal-gender-input' }}
+                          >
                           {genderOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
                               {option.label}
@@ -271,7 +296,12 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                       <InputLabel>Animal Type</InputLabel>
                       <Field name="type">
                         {({ field }: FieldProps) => (
-                          <Select {...field} label="Animal Type">
+                          <Select
+                            {...field}
+                            label="Animal Type"
+                            data-testid="animal-type"
+                            inputProps={{ 'data-testid': 'animal-type-input' }}
+                          >
                             {typeOptions.map((option) => (
                               <MenuItem key={option.value} value={option.value}>
                                 {option.label}
@@ -292,7 +322,12 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                       <InputLabel>Life Stage</InputLabel>
                       <Field name="lifeStage">
                         {({ field }: FieldProps) => (
-                          <Select {...field} label="Life Stage">
+                          <Select
+                            {...field}
+                            label="Life Stage"
+                            data-testid="animal-life-stage"
+                            inputProps={{ 'data-testid': 'animal-life-stage-input' }}
+                          >
                             {lifeStageOptions.map((option) => (
                               <MenuItem key={option.value} value={option.value}>
                                 {option.label}
@@ -313,7 +348,12 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                       <InputLabel>Status</InputLabel>
                       <Field name="status">
                         {({ field }: FieldProps) => (
-                          <Select {...field} label="Status">
+                          <Select
+                            {...field}
+                            label="Status"
+                            data-testid="animal-status"
+                            inputProps={{ 'data-testid': 'animal-status-input' }}
+                          >
                           {statusOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
                               {option.label}
@@ -350,6 +390,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                             textField: {
                               fullWidth: true,
                               required: values.acquisitionType === AnimalAcquisitionType.PURCHASED,
+                              inputProps: { 'data-testid': 'animal-purchase-date' },
                               error: touched.purchaseDate && Boolean(errors.purchaseDate),
                               helperText: touched.purchaseDate && errors.purchaseDate,
                             },
@@ -365,6 +406,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                           slotProps={{
                             textField: {
                               fullWidth: true,
+                              inputProps: { 'data-testid': 'animal-dateOfBirth' },
                               error: touched.dateOfBirth && Boolean(errors.dateOfBirth),
                               helperText: (touched.dateOfBirth && errors.dateOfBirth ? String(errors.dateOfBirth) : "Approximate date of birth if known"),
                             },
@@ -383,6 +425,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                               value={field.value || ''}
                               onChange={(e) => field.onChange({ target: { name: field.name, value: e.target.value ? parseFloat(e.target.value) : undefined } })}
                               required
+                              inputProps={{ 'data-testid': 'animal-purchase-price' }}
                               error={touched.purchasePrice && Boolean(errors.purchasePrice)}
                               helperText={touched.purchasePrice && errors.purchasePrice}
                               InputProps={{
@@ -401,6 +444,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                               fullWidth
                               label="Seller Name *"
                               required
+                              inputProps={{ 'data-testid': 'animal-purchase-from-name' }}
                               error={touched.purchaseFromName && Boolean(errors.purchaseFromName)}
                               helperText={touched.purchaseFromName && errors.purchaseFromName}
                             />
@@ -428,6 +472,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                               fullWidth
                               label="Seller Email"
                               type="email"
+                              inputProps={{ 'data-testid': 'animal-purchase-from-email' }}
                               error={touched.purchaseFromEmail && Boolean(errors.purchaseFromEmail)}
                               helperText={touched.purchaseFromEmail && errors.purchaseFromEmail}
                             />
@@ -442,7 +487,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
                 <Button onClick={onClose} disabled={isSubmitting}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="contained" disabled={isSubmitting}>
+                <Button type="submit" variant="contained" disabled={isSubmitting} data-testid="animal-save-button">
                   {isSubmitting ? 'Saving...' : (animal ? 'Update' : 'Save')}
                 </Button>
               </DialogActions>
