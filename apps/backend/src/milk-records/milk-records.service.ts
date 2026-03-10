@@ -6,8 +6,15 @@ export class MilkRecordsService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: any) {
+    // Ensure `date` is a Date object for Prisma DateTime.
+    // Frontends commonly send YYYY-MM-DD or ISO strings.
+    const normalized = {
+      ...data,
+      date: data?.date ? new Date(data.date) : data?.date,
+    };
+
     return this.prisma.milkRecord.create({
-      data,
+      data: normalized,
     });
   }
 
@@ -27,7 +34,11 @@ export class MilkRecordsService {
   }
 
   async update(id: string, data: any) {
-    return this.prisma.milkRecord.update({ where: { id }, data });
+    const normalized = {
+      ...data,
+      ...(data?.date ? { date: new Date(data.date) } : {}),
+    };
+    return this.prisma.milkRecord.update({ where: { id }, data: normalized });
   }
 
   async remove(id: string) {

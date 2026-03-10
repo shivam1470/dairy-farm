@@ -1,9 +1,3 @@
-import { Module } from '@nestjs/common';
-import { ExpensesController } from './expenses.controller';
-import { ExpensesService } from './expenses.service';
-
-@Module({
-  controllers: [ExpensesController],
-  providers: [ExpensesService],
-})
-export class ExpensesModule {}
+// Expenses feature removed (replaced by Payments).
+// This file remains only to keep the folder around without impacting compilation.
+export {};

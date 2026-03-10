@@ -160,6 +160,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit
                       <Select
                         {...field}
                         label="Type"
+                        inputProps={{ 'data-testid': 'payment-form-type' }}
                         onChange={(e) => {
                           field.onChange(e);
                           // Reset category when type changes
@@ -190,7 +191,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit
                   <InputLabel>Category</InputLabel>
                   <Field name="category">
                     {({ field }: FieldProps) => (
-                      <Select {...field} label="Category">
+                      <Select {...field} label="Category" inputProps={{ 'data-testid': 'payment-form-category' }}>
                         {getCategoryOptions(values.type).map((option) => (
                           <MenuItem key={option.value} value={option.value}>
                             {option.label}
@@ -215,6 +216,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit
                       fullWidth
                       label="Amount"
                       type="number"
+                      inputProps={{ 'data-testid': 'payment-form-amount' }}
                       error={touched.amount && !!errors.amount}
                       helperText={touched.amount && errors.amount}
                       InputProps={{
@@ -239,6 +241,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit
                           fullWidth: true,
                           error: touched.date && !!errors.date,
                           helperText: touched.date && errors.date,
+                          inputProps: { 'data-testid': 'payment-form-date' },
                         },
                       }}
                     />
@@ -260,6 +263,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit
                           fullWidth: true,
                           error: touched.transactionDate && !!errors.transactionDate,
                           helperText: touched.transactionDate && errors.transactionDate,
+                          inputProps: { 'data-testid': 'payment-form-transactionDate' },
                         },
                       }}
                     />
@@ -276,6 +280,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit
                       label="Description"
                       multiline
                       rows={2}
+                      inputProps={{ 'data-testid': 'payment-form-description' }}
                       error={touched.description && !!errors.description}
                       helperText={touched.description && errors.description}
                     />
@@ -288,7 +293,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit
                   <InputLabel>Payment Method</InputLabel>
                   <Field name="paymentMethod">
                     {({ field }: FieldProps) => (
-                      <Select {...field} label="Payment Method">
+                      <Select {...field} label="Payment Method" inputProps={{ 'data-testid': 'payment-form-paymentMethod' }}>
                         {paymentMethodOptions.map((option) => (
                           <MenuItem key={option.value} value={option.value}>
                             {option.label}
@@ -314,6 +319,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit
                       label="Notes (Optional)"
                       multiline
                       rows={2}
+                      inputProps={{ 'data-testid': 'payment-form-notes' }}
                     />
                   )}
                 </Field>
@@ -321,10 +327,10 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ payment, farmId, mode = 'edit
             </Grid>
 
             <Box mt={3} display="flex" justifyContent="flex-end" gap={2}>
-              <Button onClick={onCancel} disabled={isSubmitting}>
+              <Button onClick={onCancel} disabled={isSubmitting} data-testid="payment-form-cancel">
                 Cancel
               </Button>
-              <Button type="submit" variant="contained" disabled={isSubmitting}>
+              <Button type="submit" variant="contained" disabled={isSubmitting} data-testid="payment-form-submit">
                 {isSubmitting ? 'Saving...' : payment ? 'Update' : 'Create'}
               </Button>
             </Box>

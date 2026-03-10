@@ -701,6 +701,42 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
+        CreateMilkRecordDto: {
+            /** @example animal_123 */
+            animalId: string;
+            /** @example farm_123 */
+            farmId: string;
+            /** @example 2026-03-10 */
+            date: string;
+            /** @enum {string} */
+            session: "MORNING" | "EVENING";
+            /** @example 8.5 */
+            quantity: number;
+            /** @example 4.2 */
+            fatContent?: number;
+            /** @enum {string} */
+            quality?: "EXCELLENT" | "GOOD" | "AVERAGE" | "POOR";
+            /** @example Good yield today */
+            notes?: string;
+        };
+        MilkRecordDto: {
+            id: string;
+            farmId: string;
+            animalId: string;
+            /** Format: date-time */
+            date: string;
+            /** @enum {string} */
+            session: "MORNING" | "EVENING";
+            quantity: number;
+            fatContent?: number;
+            /** @enum {string} */
+            quality?: "EXCELLENT" | "GOOD" | "AVERAGE" | "POOR";
+            notes?: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         FarmDevelopmentPhaseDto: {
             id: string;
             farmId: string;
@@ -1213,7 +1249,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MilkRecordDto"][];
+                };
             };
         };
     };
@@ -1224,13 +1262,19 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateMilkRecordDto"];
+            };
+        };
         responses: {
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MilkRecordDto"];
+                };
             };
         };
     };
@@ -1249,7 +1293,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MilkRecordDto"];
+                };
             };
         };
     };
@@ -1268,7 +1314,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MilkRecordDto"];
+                };
             };
         };
     };
@@ -1287,7 +1335,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MilkRecordDto"];
+                };
             };
         };
     };

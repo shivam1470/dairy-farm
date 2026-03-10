@@ -309,11 +309,31 @@
       "post": {
         "operationId": "MilkRecordsController_create",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMilkRecordDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MilkRecordDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "milk-records"
+        ]
       },
       "get": {
         "operationId": "MilkRecordsController_findAll",
@@ -329,9 +349,22 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MilkRecordDto"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "milk-records"
+        ]
       }
     },
     "/milk-records/{id}": {
@@ -349,9 +382,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MilkRecordDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "milk-records"
+        ]
       },
       "patch": {
         "operationId": "MilkRecordsController_update",
@@ -367,9 +410,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MilkRecordDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "milk-records"
+        ]
       },
       "delete": {
         "operationId": "MilkRecordsController_remove",
@@ -385,9 +438,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MilkRecordDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "milk-records"
+        ]
       }
     },
     "/expenses": {
@@ -1868,6 +1931,119 @@
           "status",
           "acquisitionType",
           "farmId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateMilkRecordDto": {
+        "type": "object",
+        "properties": {
+          "animalId": {
+            "type": "string",
+            "example": "animal_123"
+          },
+          "farmId": {
+            "type": "string",
+            "example": "farm_123"
+          },
+          "date": {
+            "type": "string",
+            "example": "2026-03-10"
+          },
+          "session": {
+            "type": "string",
+            "enum": [
+              "MORNING",
+              "EVENING"
+            ]
+          },
+          "quantity": {
+            "type": "number",
+            "example": 8.5
+          },
+          "fatContent": {
+            "type": "number",
+            "example": 4.2
+          },
+          "quality": {
+            "type": "string",
+            "enum": [
+              "EXCELLENT",
+              "GOOD",
+              "AVERAGE",
+              "POOR"
+            ]
+          },
+          "notes": {
+            "type": "string",
+            "example": "Good yield today"
+          }
+        },
+        "required": [
+          "animalId",
+          "farmId",
+          "date",
+          "session",
+          "quantity"
+        ]
+      },
+      "MilkRecordDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "farmId": {
+            "type": "string"
+          },
+          "animalId": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "session": {
+            "type": "string",
+            "enum": [
+              "MORNING",
+              "EVENING"
+            ]
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "fatContent": {
+            "type": "number"
+          },
+          "quality": {
+            "type": "string",
+            "enum": [
+              "EXCELLENT",
+              "GOOD",
+              "AVERAGE",
+              "POOR"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "farmId",
+          "animalId",
+          "date",
+          "session",
+          "quantity",
           "createdAt",
           "updatedAt"
         ]

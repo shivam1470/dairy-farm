@@ -6,7 +6,13 @@ export class WorkersService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: any) {
-    return this.prisma.worker.create({ data });
+    const joinDate = (data as any).joinDate ? new Date((data as any).joinDate) : undefined;
+    return this.prisma.worker.create({
+      data: {
+        ...data,
+        ...(joinDate ? { joinDate } : {}),
+      },
+    });
   }
 
   async findAll(farmId: string) {
@@ -18,7 +24,14 @@ export class WorkersService {
   }
 
   async update(id: string, data: any) {
-    return this.prisma.worker.update({ where: { id }, data });
+    const joinDate = (data as any).joinDate ? new Date((data as any).joinDate) : undefined;
+    return this.prisma.worker.update({
+      where: { id },
+      data: {
+        ...data,
+        ...(joinDate ? { joinDate } : {}),
+      },
+    });
   }
 
   async remove(id: string) {
