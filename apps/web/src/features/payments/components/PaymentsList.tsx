@@ -80,7 +80,7 @@ const PaymentsList: React.FC<PaymentsListProps> = ({
   };
 
   const renderPaymentTable = (payments: Payment[], title: string, emptyMessage: string) => (
-    <Paper sx={{ mb: 3 }}>
+    <Paper sx={{ mb: 3 }} data-testid={title === 'Income' ? 'payments-income-section' : 'payments-expense-section'}>
       <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6">{title}</Typography>
         <Button
@@ -88,6 +88,7 @@ const PaymentsList: React.FC<PaymentsListProps> = ({
           startIcon={<Add />}
           onClick={title === 'Income' ? onAddIncome : onAddExpense}
           color={title === 'Income' ? 'success' : 'error'}
+          data-testid={title === 'Income' ? 'payments-add-income' : 'payments-add-expense'}
         >
           Add {title}
         </Button>
@@ -98,7 +99,7 @@ const PaymentsList: React.FC<PaymentsListProps> = ({
           <Typography color="text.secondary">{emptyMessage}</Typography>
         </Box>
       ) : (
-        <TableContainer>
+        <TableContainer data-testid={title === 'Income' ? 'payments-income-list' : 'payments-expense-list'}>
           <Table>
             <TableHead>
               <TableRow>
@@ -112,7 +113,7 @@ const PaymentsList: React.FC<PaymentsListProps> = ({
             </TableHead>
             <TableBody>
               {payments.map((payment) => (
-                <TableRow key={payment.id}>
+                <TableRow key={payment.id} data-testid={`${title === 'Income' ? 'payment-income-row' : 'payment-expense-row'}-${payment.id}`}>
                   <TableCell>{formatDate(payment.transactionDate)}</TableCell>
                   <TableCell>
                     <Chip
@@ -133,12 +134,12 @@ const PaymentsList: React.FC<PaymentsListProps> = ({
                   <TableCell>{payment.paymentMethod}</TableCell>
                   <TableCell>
                     <Tooltip title="Edit">
-                      <IconButton size="small" onClick={() => onEdit(payment)}>
+                      <IconButton size="small" onClick={() => onEdit(payment)} data-testid={`payment-edit-${payment.id}`}>
                         <Edit />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete">
-                      <IconButton size="small" color="error" onClick={() => handleDeleteClick(payment)}>
+                      <IconButton size="small" color="error" onClick={() => handleDeleteClick(payment)} data-testid={`payment-delete-${payment.id}`}>
                         <Delete />
                       </IconButton>
                     </Tooltip>

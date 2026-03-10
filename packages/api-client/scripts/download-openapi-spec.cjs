@@ -12,15 +12,24 @@ const path = require('path');
 const outPath = path.join(__dirname, '..', 'openapi', 'openapi.json');
 const url = process.env.OPENAPI_URL || 'http://127.0.0.1:3001/api-json';
 
+async function getFetch() {
+  // eslint-disable-next-line no-undef
+  if (typeof globalThis.fetch === 'function') return globalThis.fetch;
+  // Node <18 fallback (or environments where fetch is disabled)
+  const { fetch } = await import('undici');
+  return fetch;
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function fetchWithRetry(fetchUrl, { retries = 20, delayMs = 500 } = {}) {
   let lastErr;
+  const fetchFn = await getFetch();
   for (let i = 0; i < retries; i += 1) {
     try {
-      const res = await fetch(fetchUrl);
+      const res = await fetchFn(fetchUrl);
       return res;
     } catch (err) {
       lastErr = err;

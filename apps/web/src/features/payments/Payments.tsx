@@ -149,7 +149,7 @@ const Payments: React.FC = () => {
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h4" component="h1" gutterBottom>
+          <Typography variant="h4" component="h1" gutterBottom data-testid="payments-title">
             Payments
           </Typography>
         </Box>
@@ -167,8 +167,8 @@ const Payments: React.FC = () => {
       </Box>
 
       {/* Payment Form Dialog */}
-      <Dialog open={formOpen} onClose={handleCloseForm} maxWidth="md" fullWidth>
-        <DialogTitle>
+      <Dialog open={formOpen} onClose={handleCloseForm} maxWidth="md" fullWidth data-testid="payment-form-dialog">
+        <DialogTitle data-testid="payment-form-title">
           {selectedPayment ? 'Edit Payment' : 'Add New Payment'}
         </DialogTitle>
         <DialogContent>

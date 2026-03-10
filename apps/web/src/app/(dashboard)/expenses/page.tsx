@@ -1,14 +1,6 @@
-import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 
-const Expenses = dynamic(() => import('@/features/expenses/Expenses'), {
-  loading: () => <div>Loading...</div>,
-});
-
+// Expenses feature removed; keep users on Payments.
 export default function ExpensesPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Expenses />
-    </Suspense>
-  );
+  redirect('/payments');
 }

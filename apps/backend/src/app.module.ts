@@ -5,7 +5,6 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { AnimalsModule } from './animals/animals.module';
 import { MilkRecordsModule } from './milk-records/milk-records.module';
-import { ExpensesModule } from './expenses/expenses.module';
 import { WorkersModule } from './workers/workers.module';
 import { TasksModule } from './tasks/tasks.module';
 import { FeedingModule } from './feeding/feeding.module';
@@ -26,7 +25,6 @@ import { AppController } from './app.controller';
     UsersModule,
     AnimalsModule,
     MilkRecordsModule,
-    ExpensesModule,
     WorkersModule,
     TasksModule,
     FeedingModule,

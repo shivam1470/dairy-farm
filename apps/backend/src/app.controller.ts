@@ -27,7 +27,6 @@ export class AppController {
       await this.prisma.$executeRaw`TRUNCATE TABLE "feeding_logs" CASCADE`;
       await this.prisma.$executeRaw`TRUNCATE TABLE "tasks" CASCADE`;
       await this.prisma.$executeRaw`TRUNCATE TABLE "workers" CASCADE`;
-      await this.prisma.$executeRaw`TRUNCATE TABLE "expenses" CASCADE`;
       await this.prisma.$executeRaw`TRUNCATE TABLE "milk_records" CASCADE`;
       await this.prisma.$executeRaw`TRUNCATE TABLE "animals" CASCADE`;
       await this.prisma.$executeRaw`TRUNCATE TABLE "users" CASCADE`;
@@ -104,7 +103,6 @@ export class AppController {
         auth: '/auth',
         animals: '/animals',
         milkRecords: '/milk-records',
-        expenses: '/expenses',
         workers: '/workers',
         tasks: '/tasks',
         feeding: '/feeding',

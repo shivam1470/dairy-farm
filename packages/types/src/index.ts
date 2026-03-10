@@ -204,13 +204,35 @@ export interface Worker {
   farmId: string;
   name: string;
   contactNumber: string;
+  email?: string;
   address?: string;
-  role: string;
+  role: WorkerRole;
+  shift: WorkerShift;
   salary: number;
-  joiningDate: Date;
+  joinDate: Date;
   status: WorkerStatus;
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export enum WorkerRole {
+  MANAGER = 'MANAGER',
+  SUPERVISOR = 'SUPERVISOR',
+  MILKER = 'MILKER',
+  FEEDER = 'FEEDER',
+  CLEANER = 'CLEANER',
+  DRIVER = 'DRIVER',
+  VETERINARIAN = 'VETERINARIAN',
+  OTHER = 'OTHER',
+}
+
+export enum WorkerShift {
+  MORNING = 'MORNING',
+  EVENING = 'EVENING',
+  NIGHT = 'NIGHT',
+  DAY = 'DAY',
+  FULL_TIME = 'FULL_TIME',
 }
 
 export enum WorkerStatus {
@@ -224,10 +246,14 @@ export interface CreateWorkerDto {
   farmId: string;
   name: string;
   contactNumber: string;
+  email?: string;
   address?: string;
-  role: string;
+  role: WorkerRole;
+  shift: WorkerShift;
   salary: number;
-  joiningDate: Date;
+  joinDate: string;
+  status: WorkerStatus;
+  notes?: string;
 }
 
 // Task Types
@@ -236,11 +262,12 @@ export interface Task {
   farmId: string;
   title: string;
   description?: string;
-  assignedTo?: string;
+  assignedToId?: string;
   dueDate: Date;
   priority: TaskPriority;
   status: TaskStatus;
-  createdBy: string;
+  notes?: string;
+  createdById: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -263,47 +290,72 @@ export interface CreateTaskDto {
   farmId: string;
   title: string;
   description?: string;
-  assignedTo?: string;
-  dueDate: Date;
+  assignedToId?: string;
+  dueDate: string;
   priority: TaskPriority;
+  status: TaskStatus;
+  notes?: string;
+  createdById: string;
 }
 
 // Feeding Log Types
 export interface FeedingLog {
   id: string;
+  farmId: string;
   animalId: string;
   date: Date;
-  feedType: string;
+  feedingTime: FeedingTime;
+  feedType: FeedType;
   quantity: number;
-  unit: string;
+  cost?: number;
   notes?: string;
-  recordedBy: string;
+  recordedById: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface CreateFeedingLogDto {
+  farmId: string;
   animalId: string;
-  date: Date;
-  feedType: string;
+  date: string;
+  feedingTime: FeedingTime;
+  feedType: FeedType;
   quantity: number;
-  unit: string;
+  cost?: number;
   notes?: string;
+  recordedById: string;
+}
+
+export enum FeedingTime {
+  MORNING = 'MORNING',
+  AFTERNOON = 'AFTERNOON',
+  EVENING = 'EVENING',
+}
+
+export enum FeedType {
+  HAY = 'HAY',
+  SILAGE = 'SILAGE',
+  CONCENTRATE = 'CONCENTRATE',
+  GRAINS = 'GRAINS',
+  MINERAL_SUPPLEMENTS = 'MINERAL_SUPPLEMENTS',
+  FRESH_GRASS = 'FRESH_GRASS',
 }
 
 // Delivery Log Types
 export interface DeliveryLog {
   id: string;
   farmId: string;
-  date: Date;
+  deliveryDate: Date;
+  buyerName: string;
+  buyerPhone?: string;
   quantity: number;
-  destination: string;
-  price: number;
+  pricePerLiter: number;
   totalAmount: number;
-  invoiceNumber?: string;
-  status: DeliveryStatus;
+  deliveryStatus: DeliveryStatus;
+  paymentStatus: PaymentStatus;
+  address?: string;
   notes?: string;
-  createdBy: string;
+  createdById: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -314,27 +366,42 @@ export enum DeliveryStatus {
   CANCELLED = 'CANCELLED',
 }
 
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  PARTIAL = 'PARTIAL',
+  OVERDUE = 'OVERDUE',
+}
+
 export interface CreateDeliveryLogDto {
   farmId: string;
-  date: Date;
+  deliveryDate: string;
+  buyerName: string;
+  buyerPhone?: string;
   quantity: number;
-  destination: string;
-  price: number;
-  invoiceNumber?: string;
+  pricePerLiter: number;
+  totalAmount: number;
+  deliveryStatus: DeliveryStatus;
+  paymentStatus: PaymentStatus;
+  address?: string;
   notes?: string;
+  createdById: string;
 }
 
 // Vet Visit Types
 export interface VetVisit {
   id: string;
   animalId: string;
-  date: Date;
-  reason: string;
+  visitDate: Date;
+  visitType?: VetVisitType;
+  visitReason: string;
+  treatmentType?: TreatmentType;
   diagnosis?: string;
   treatment?: string;
-  prescriptions?: string;
-  vetName: string;
+  prescription?: string;
+  veterinarian: string;
   cost: number;
+  visitStatus: VetVisitStatus;
   nextVisitDate?: Date;
   notes?: string;
   createdAt: Date;
@@ -343,15 +410,41 @@ export interface VetVisit {
 
 export interface CreateVetVisitDto {
   animalId: string;
-  date: Date;
-  reason: string;
+  visitDate: string;
+  visitType?: VetVisitType;
+  visitReason: string;
+  treatmentType?: TreatmentType;
   diagnosis?: string;
   treatment?: string;
-  prescriptions?: string;
-  vetName: string;
+  prescription?: string;
+  veterinarian: string;
   cost: number;
-  nextVisitDate?: Date;
+  visitStatus: VetVisitStatus;
+  nextVisitDate?: string;
   notes?: string;
+}
+
+export enum VetVisitType {
+  ROUTINE = 'ROUTINE',
+  EMERGENCY = 'EMERGENCY',
+  FOLLOWUP = 'FOLLOWUP',
+  VACCINATION = 'VACCINATION',
+  CHECKUP = 'CHECKUP',
+}
+
+export enum TreatmentType {
+  VACCINATION = 'VACCINATION',
+  MEDICATION = 'MEDICATION',
+  SURGERY = 'SURGERY',
+  CHECKUP = 'CHECKUP',
+  DEWORMING = 'DEWORMING',
+  OTHER = 'OTHER',
+}
+
+export enum VetVisitStatus {
+  SCHEDULED = 'SCHEDULED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
 }
 
 // Dashboard & Analytics Types

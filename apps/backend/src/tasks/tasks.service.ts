@@ -6,7 +6,13 @@ export class TasksService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: any) {
-    return this.prisma.task.create({ data });
+    const dueDate = (data as any).dueDate ? new Date((data as any).dueDate) : undefined;
+    return this.prisma.task.create({
+      data: {
+        ...data,
+        ...(dueDate ? { dueDate } : {}),
+      },
+    });
   }
 
   async findAll(farmId: string) {
@@ -21,7 +27,14 @@ export class TasksService {
   }
 
   async update(id: string, data: any) {
-    return this.prisma.task.update({ where: { id }, data });
+    const dueDate = (data as any).dueDate ? new Date((data as any).dueDate) : undefined;
+    return this.prisma.task.update({
+      where: { id },
+      data: {
+        ...data,
+        ...(dueDate ? { dueDate } : {}),
+      },
+    });
   }
 
   async remove(id: string) {
