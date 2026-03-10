@@ -35,8 +35,9 @@ export class CreateAnimalDto {
   @IsEnum(AnimalAcquisitionType)
   acquisitionType: AnimalAcquisitionType;
 
+  @IsOptional()
   @IsString()
-  farmId: string;
+  farmId?: string;
 
   @IsOptional()
   @IsDateString()

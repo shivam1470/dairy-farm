@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
+
 import React, { useState, useMemo } from 'react';
 import {
   Box,
@@ -98,6 +100,7 @@ const AnimalsList: React.FC<AnimalsListProps> = ({
           variant="contained"
           startIcon={<Add />}
           onClick={onAdd}
+          data-testid="animals-add-button"
         >
           Add Animal
         </Button>

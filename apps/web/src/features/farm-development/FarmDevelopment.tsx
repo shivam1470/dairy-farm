@@ -151,6 +151,7 @@ const FarmDevelopment: React.FC = () => {
           variant="contained"
           startIcon={<Add />}
           onClick={() => handleOpenDialog()}
+          data-testid="farmdev-add-phase-button"
         >
           Add Phase
         </Button>
@@ -282,6 +283,7 @@ const FarmDevelopment: React.FC = () => {
               onChange={(e) =>
                 setFormData({ ...formData, phaseName: e.target.value })
               }
+              inputProps={{ 'data-testid': 'farmdev-phase-name' }}
               required
               fullWidth
             />
@@ -291,6 +293,7 @@ const FarmDevelopment: React.FC = () => {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
+              inputProps={{ 'data-testid': 'farmdev-phase-description' }}
               multiline
               rows={3}
               fullWidth
@@ -305,6 +308,7 @@ const FarmDevelopment: React.FC = () => {
                   phaseOrder: parseInt(e.target.value) || 0,
                 })
               }
+              inputProps={{ 'data-testid': 'farmdev-phase-order' }}
               fullWidth
             />
             <TextField
@@ -317,6 +321,7 @@ const FarmDevelopment: React.FC = () => {
                   budget: e.target.value ? parseFloat(e.target.value) : undefined,
                 })
               }
+              inputProps={{ 'data-testid': 'farmdev-phase-budget' }}
               fullWidth
             />
             <TextField
@@ -333,17 +338,21 @@ const FarmDevelopment: React.FC = () => {
                   targetDate: e.target.value || undefined,
                 })
               }
+              inputProps={{ 'data-testid': 'farmdev-phase-targetDate' }}
               InputLabelProps={{ shrink: true }}
               fullWidth
             />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleCloseDialog} data-testid="farmdev-phase-cancel">
+            Cancel
+          </Button>
           <Button
             onClick={handleSubmit}
             variant="contained"
             disabled={!formData.phaseName || loading}
+            data-testid="farmdev-phase-submit"
           >
             {editingPhase ? 'Update' : 'Create'}
           </Button>

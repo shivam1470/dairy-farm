@@ -39,11 +39,16 @@ dist/
 # Environment Variables
 # ========================
 .env
+.env.*
 .env*.local
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Also ignore env files inside packages/apps
+**/.env
+**/.env.*
 
 # Keep example env files
 !.env.example
@@ -104,6 +109,10 @@ postgres-data/
 # Expo (Mobile)
 # ========================
 .expo/
+
+# Playwright
+playwright-report/
+test-results/
 .expo-shared/
 expo-dev-client/
 web-build/

@@ -13,11 +13,19 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+  "openapi:download": "OPENAPI_URL=${OPENAPI_URL:-http://127.0.0.1:3001/api-json} node packages/api-client/scripts/download-openapi-spec.cjs",
+  "openapi:generate": "pnpm openapi:download && pnpm --filter @dairy-farm/api-client run generate:types:file",
+    "openapi:generate:live": "OPENAPI_URL=${OPENAPI_URL:-http://127.0.0.1:3001/api-json} pnpm --filter @dairy-farm/api-client run generate:types",
+    "api-client:build": "pnpm --filter @dairy-farm/api-client build",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "prepare": "node -e \"try { require('husky').install() } catch (e) { if (e.code !== 'MODULE_NOT_FOUND') throw e }\""
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/node": "^20.10.5",
     "eslint": "^8.55.0",
     "husky": "^8.0.3",
@@ -30,5 +38,6 @@
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
-  "packageManager": "pnpm@8.15.0"
+  "packageManager": "pnpm@8.15.0",
+  "dependencies": {}
 }

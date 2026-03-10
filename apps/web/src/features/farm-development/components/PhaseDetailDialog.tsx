@@ -76,6 +76,14 @@ const PhaseDetailDialog: React.FC<PhaseDetailDialogProps> = ({
     }
   }, [phase]);
 
+  // When the parent refreshes the selected phase after a milestone mutation,
+  // we want the dialog list to reflect those changes immediately.
+  useEffect(() => {
+    if (open && phase) {
+      setMilestones(phase.milestones || []);
+    }
+  }, [open, phase]);
+
   const handleAddMilestone = () => {
     setEditingMilestone(null);
     setMilestoneFormData({
@@ -110,7 +118,12 @@ const PhaseDetailDialog: React.FC<PhaseDetailDialogProps> = ({
       if (editingMilestone) {
         await updateMilestone(editingMilestone.id, milestoneFormData as UpdateMilestoneDto);
       } else {
-        await createMilestone(phase.id, milestoneFormData);
+        const created = await createMilestone(phase.id, milestoneFormData);
+        // Optimistically reflect the new milestone in the UI so tests/users see it immediately,
+        // even if the parent refresh is async.
+        if (created) {
+          setMilestones((prev) => [...prev, created]);
+        }
       }
       setShowMilestoneForm(false);
       onRefresh();
@@ -143,6 +156,19 @@ const PhaseDetailDialog: React.FC<PhaseDetailDialogProps> = ({
 
     try {
       await completeMilestone(id);
+
+      // Optimistically mark as completed in the UI so the user sees immediate feedback.
+      setMilestones((prev) =>
+        prev.map((m) =>
+          m.id === id
+            ? {
+                ...m,
+                status: 'COMPLETED',
+                completedDate: new Date().toISOString(),
+              }
+            : m,
+        ),
+      );
       onRefresh();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to complete milestone');
@@ -308,6 +334,7 @@ const PhaseDetailDialog: React.FC<PhaseDetailDialogProps> = ({
               startIcon={<Add />}
               onClick={handleAddMilestone}
               variant="outlined"
+              data-testid="farmdev-add-milestone-button"
             >
               Add Milestone
             </Button>
@@ -325,6 +352,7 @@ const PhaseDetailDialog: React.FC<PhaseDetailDialogProps> = ({
                   onChange={(e) =>
                     setMilestoneFormData({ ...milestoneFormData, title: e.target.value })
                   }
+                  inputProps={{ 'data-testid': 'farmdev-milestone-title' }}
                   required
                   fullWidth
                   size="small"
@@ -335,6 +363,7 @@ const PhaseDetailDialog: React.FC<PhaseDetailDialogProps> = ({
                   onChange={(e) =>
                     setMilestoneFormData({ ...milestoneFormData, description: e.target.value })
                   }
+                  inputProps={{ 'data-testid': 'farmdev-milestone-description' }}
                   multiline
                   rows={2}
                   fullWidth
@@ -352,6 +381,7 @@ const PhaseDetailDialog: React.FC<PhaseDetailDialogProps> = ({
                           status: e.target.value as any,
                         })
                       }
+                      inputProps={{ 'data-testid': 'farmdev-milestone-status' }}
                       fullWidth
                       size="small"
                     >
@@ -376,6 +406,7 @@ const PhaseDetailDialog: React.FC<PhaseDetailDialogProps> = ({
                           dueDate: e.target.value || undefined,
                         })
                       }
+                      inputProps={{ 'data-testid': 'farmdev-milestone-dueDate' }}
                       InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
@@ -406,6 +437,7 @@ const PhaseDetailDialog: React.FC<PhaseDetailDialogProps> = ({
                     variant="contained"
                     onClick={handleSubmitMilestone}
                     disabled={!milestoneFormData.title || loading}
+                    data-testid="farmdev-milestone-submit"
                   >
                     {loading ? <CircularProgress size={20} /> : editingMilestone ? 'Update' : 'Add'}
                   </Button>
@@ -503,6 +535,7 @@ const PhaseDetailDialog: React.FC<PhaseDetailDialogProps> = ({
                               color="success"
                               title="Mark as complete"
                               disabled={loading}
+                              data-testid={`farmdev-milestone-complete-${milestone.id}`}
                             >
                               <CheckCircle fontSize="small" />
                             </IconButton>
