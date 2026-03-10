@@ -153,6 +153,7 @@ const PhaseCard: React.FC<PhaseCardProps> = ({
           size="small"
           startIcon={<Visibility />}
           onClick={() => onView(phase)}
+          data-testid={`farmdev-phase-card-${phase.id}-view`}
         >
           View
         </Button>
