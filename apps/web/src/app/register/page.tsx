@@ -3,33 +3,44 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Container,
   Box,
-  Paper,
-  Typography,
-  TextField,
   Button,
-  Link,
-  InputAdornment,
+  Container,
   IconButton,
+  InputAdornment,
+  Link,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
 } from '@mui/material';
 import {
-  Visibility,
-  VisibilityOff,
+  Agriculture,
   Email,
   Lock,
   Person,
-  Agriculture,
+  Visibility,
+  VisibilityOff,
 } from '@mui/icons-material';
-import apiClient from '@/lib/api';
+import { authApi } from '@/lib/auth-api';
+import { useAuthStore } from '@/store/authStore';
+
+const emptyForm = {
+  name: '',
+  farmName: '',
+  ownerName: '',
+  email: '',
+  contactNumber: '',
+  location: '',
+  totalArea: '',
+  password: '',
+  confirmPassword: '',
+};
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [farmName, setFarmName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const { setAuth } = useAuthStore();
+  const [form, setForm] = useState(emptyForm);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -38,23 +49,33 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
 
-    if (password !== confirmPassword) {
+    if (form.password !== form.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
-    if (password.length < 6) {
+    if (form.password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
     }
 
-    setLoading(true);
-
     try {
-      await apiClient.post('/auth/register', { name, farmName, email, password });
-      router.push('/login');
+      setLoading(true);
+      const data = await authApi.register({
+        name: form.name,
+        farmName: form.farmName,
+        ownerName: form.ownerName,
+        email: form.email,
+        contactNumber: form.contactNumber,
+        location: form.location,
+        password: form.password,
+        ...(form.totalArea ? { totalArea: Number(form.totalArea) } : {}),
+      });
+
+      setAuth(data.user, data.accessToken);
+      router.push('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(err?.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -83,10 +104,10 @@ export default function RegisterPage() {
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Agriculture sx={{ fontSize: 64, color: 'primary.main', mb: 2 }} />
             <Typography variant="h4" fontWeight={700} gutterBottom>
-              Create Account
+              Create Your Farm Account
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Join Dairy Farm Manager today
+              One signup creates your admin account and your farm workspace.
             </Typography>
           </Box>
 
@@ -105,98 +126,125 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleRegister}>
-            <TextField
-              fullWidth
-              label="Full Name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              margin="normal"
-              required
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Person color="action" />
-                  </InputAdornment>
-                ),
-              }}
-            />
+            <Stack spacing={2}>
+              <TextField
+                fullWidth
+                label="Full Name"
+                value={form.name}
+                onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Person color="action" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-            <TextField
-              fullWidth
-              label="Farm Name"
-              type="text"
-              value={farmName}
-              onChange={(e) => setFarmName(e.target.value)}
-              margin="normal"
-              required
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Agriculture color="action" />
-                  </InputAdornment>
-                ),
-              }}
-            />
+              <TextField
+                fullWidth
+                label="Farm Name"
+                value={form.farmName}
+                onChange={(e) => setForm((prev) => ({ ...prev, farmName: e.target.value }))}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Agriculture color="action" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-            <TextField
-              fullWidth
-              label="Email Address"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              margin="normal"
-              required
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Email color="action" />
-                  </InputAdornment>
-                ),
-              }}
-            />
+              <TextField
+                fullWidth
+                label="Owner Name"
+                value={form.ownerName}
+                onChange={(e) => setForm((prev) => ({ ...prev, ownerName: e.target.value }))}
+                required
+              />
 
-            <TextField
-              fullWidth
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              margin="normal"
-              required
-              helperText="At least 6 characters"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock color="action" />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+              <TextField
+                fullWidth
+                label="Email Address"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email color="action" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-            <TextField
-              fullWidth
-              label="Confirm Password"
-              type={showPassword ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              margin="normal"
-              required
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock color="action" />
-                  </InputAdornment>
-                ),
-              }}
-            />
+              <TextField
+                fullWidth
+                label="Contact Number"
+                value={form.contactNumber}
+                onChange={(e) => setForm((prev) => ({ ...prev, contactNumber: e.target.value }))}
+                required
+              />
+
+              <TextField
+                fullWidth
+                label="Farm Location"
+                value={form.location}
+                onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))}
+                required
+              />
+
+              <TextField
+                fullWidth
+                label="Total Area (optional)"
+                type="number"
+                value={form.totalArea}
+                onChange={(e) => setForm((prev) => ({ ...prev, totalArea: e.target.value }))}
+              />
+
+              <TextField
+                fullWidth
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                value={form.password}
+                onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                required
+                helperText="At least 6 characters"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock color="action" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <TextField
+                fullWidth
+                label="Confirm Password"
+                type={showPassword ? 'text' : 'password'}
+                value={form.confirmPassword}
+                onChange={(e) => setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock color="action" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Stack>
 
             <Button
               fullWidth
@@ -212,7 +260,7 @@ export default function RegisterPage() {
                 textTransform: 'none',
               }}
             >
-              {loading ? 'Creating Account...' : 'Sign Up'}
+              {loading ? 'Creating farm account...' : 'Create Farm Account'}
             </Button>
           </form>
 

@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { VetService } from './vet.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -14,31 +15,31 @@ export class VetController {
 
   @Post()
   @ApiCreatedResponse({ type: VetVisitDto })
-  create(@Body() createVetVisitDto: CreateVetVisitDto) {
-    return this.vetService.create(createVetVisitDto);
+  create(@Req() req: Request, @Body() createVetVisitDto: CreateVetVisitDto) {
+    return this.vetService.create(req.user as any, createVetVisitDto);
   }
 
   @Get()
   @ApiOkResponse({ type: [VetVisitDto] })
-  findAll(@Query('animalId') animalId?: string) {
-    return this.vetService.findAll(animalId);
+  findAll(@Req() req: Request, @Query('animalId') animalId?: string) {
+    return this.vetService.findAll(req.user as any, animalId);
   }
 
   @Get(':id')
   @ApiOkResponse({ type: VetVisitDto })
-  findOne(@Param('id') id: string) {
-    return this.vetService.findOne(id);
+  findOne(@Req() req: Request, @Param('id') id: string) {
+    return this.vetService.findOne(req.user as any, id);
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: VetVisitDto })
-  update(@Param('id') id: string, @Body() updateVetVisitDto: UpdateVetVisitDto) {
-    return this.vetService.update(id, updateVetVisitDto);
+  update(@Req() req: Request, @Param('id') id: string, @Body() updateVetVisitDto: UpdateVetVisitDto) {
+    return this.vetService.update(req.user as any, id, updateVetVisitDto);
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: VetVisitDto })
-  remove(@Param('id') id: string) {
-    return this.vetService.remove(id);
+  remove(@Req() req: Request, @Param('id') id: string) {
+    return this.vetService.remove(req.user as any, id);
   }
 }

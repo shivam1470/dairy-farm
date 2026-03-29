@@ -3,9 +3,10 @@ import { IsString, IsDateString, IsEnum, IsOptional, IsNumber } from 'class-vali
 import { WorkerRole, WorkerShift, WorkerStatus } from '@prisma/client';
 
 export class CreateWorkerDto {
-  @ApiProperty({ example: 'farm_123' })
+  @ApiPropertyOptional({ example: 'farm_123', description: 'Derived from the authenticated user on the server.' })
+  @IsOptional()
   @IsString()
-  farmId: string;
+  farmId?: string;
 
   @ApiProperty({ example: 'Ravi Kumar' })
   @IsString()

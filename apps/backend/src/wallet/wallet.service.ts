@@ -1,31 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class WalletService {
   constructor(private prisma: PrismaService) {}
 
-  async getWallet(farmId: string) {
+  async getWallet(farmId?: string) {
+    const resolvedFarmId = this.requireFarmId(farmId);
     let wallet = await this.prisma.wallet.findUnique({
-      where: { farmId }
+      where: { farmId: resolvedFarmId }
     });
 
     if (!wallet) {
       // Create wallet if it doesn't exist
       wallet = await this.prisma.wallet.create({
-        data: { farmId, currentBalance: 0 }
+        data: { farmId: resolvedFarmId, currentBalance: 0 }
       });
     }
 
     return wallet;
   }
 
-  async getWalletWithTransactions(farmId: string) {
-    const wallet = await this.getWallet(farmId);
+  async getWalletWithTransactions(farmId?: string) {
+    const resolvedFarmId = this.requireFarmId(farmId);
+    const wallet = await this.getWallet(resolvedFarmId);
 
     // Get recent transactions
     const recentPayments = await this.prisma.payment.findMany({
-      where: { farmId },
+      where: { farmId: resolvedFarmId },
       orderBy: { date: 'desc' },
       take: 10,
       include: {
@@ -42,7 +44,7 @@ export class WalletService {
 
     const monthlyPayments = await this.prisma.payment.findMany({
       where: {
-        farmId,
+        farmId: resolvedFarmId,
         date: {
           gte: currentMonth
         }
@@ -101,5 +103,10 @@ export class WalletService {
     });
 
     return wallet;
+  }
+
+  private requireFarmId(farmId?: string) {
+    if (!farmId) throw new ForbiddenException('User is not assigned to a farm');
+    return farmId;
   }
 }

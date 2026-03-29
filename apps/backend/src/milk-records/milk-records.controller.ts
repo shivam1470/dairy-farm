@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { MilkRecordsService } from './milk-records.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -13,31 +14,31 @@ export class MilkRecordsController {
 
   @Post()
   @ApiCreatedResponse({ type: MilkRecordDto })
-  create(@Body() createMilkRecordDto: CreateMilkRecordDto) {
-    return this.milkRecordsService.create(createMilkRecordDto);
+  create(@Req() req: Request, @Body() createMilkRecordDto: CreateMilkRecordDto) {
+    return this.milkRecordsService.create(req.user as any, createMilkRecordDto);
   }
 
   @Get()
   @ApiOkResponse({ type: [MilkRecordDto] })
-  findAll(@Query('animalId') animalId?: string) {
-    return this.milkRecordsService.findAll(animalId);
+  findAll(@Req() req: Request, @Query('animalId') animalId?: string) {
+    return this.milkRecordsService.findAll(req.user as any, animalId);
   }
 
   @Get(':id')
   @ApiOkResponse({ type: MilkRecordDto })
-  findOne(@Param('id') id: string) {
-    return this.milkRecordsService.findOne(id);
+  findOne(@Req() req: Request, @Param('id') id: string) {
+    return this.milkRecordsService.findOne(req.user as any, id);
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: MilkRecordDto })
-  update(@Param('id') id: string, @Body() updateMilkRecordDto: any) {
-    return this.milkRecordsService.update(id, updateMilkRecordDto);
+  update(@Req() req: Request, @Param('id') id: string, @Body() updateMilkRecordDto: any) {
+    return this.milkRecordsService.update(req.user as any, id, updateMilkRecordDto);
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: MilkRecordDto })
-  remove(@Param('id') id: string) {
-    return this.milkRecordsService.remove(id);
+  remove(@Req() req: Request, @Param('id') id: string) {
+    return this.milkRecordsService.remove(req.user as any, id);
   }
 }

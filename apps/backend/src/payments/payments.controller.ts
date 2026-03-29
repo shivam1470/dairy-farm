@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto, UpdatePaymentDto } from './dto/create-payment.dto';
@@ -15,42 +15,42 @@ export class PaymentsController {
   @Post()
   @ApiCreatedResponse({ type: PaymentDto })
   create(@Body() createPaymentDto: CreatePaymentDto, @Request() req) {
-    return this.paymentsService.create(createPaymentDto, req.user.id);
+    return this.paymentsService.create(req.user, createPaymentDto);
   }
 
   @Get()
   @ApiOkResponse({ type: [PaymentDto] })
-  findAll(@Query('farmId') farmId: string) {
-    return this.paymentsService.findAll(farmId);
+  findAll(@Request() req) {
+    return this.paymentsService.findAll(req.user);
   }
 
   @Get('income')
   @ApiOkResponse({ type: [PaymentDto] })
-  findIncome(@Query('farmId') farmId: string) {
-    return this.paymentsService.findIncome(farmId);
+  findIncome(@Request() req) {
+    return this.paymentsService.findIncome(req.user);
   }
 
   @Get('expenses')
   @ApiOkResponse({ type: [PaymentDto] })
-  findExpenses(@Query('farmId') farmId: string) {
-    return this.paymentsService.findExpenses(farmId);
+  findExpenses(@Request() req) {
+    return this.paymentsService.findExpenses(req.user);
   }
 
   @Get(':id')
   @ApiOkResponse({ type: PaymentDto })
-  findOne(@Param('id') id: string) {
-    return this.paymentsService.findOne(id);
+  findOne(@Request() req, @Param('id') id: string) {
+    return this.paymentsService.findOne(req.user, id);
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: PaymentDto })
-  update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentsService.update(id, updatePaymentDto);
+  update(@Request() req, @Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
+    return this.paymentsService.update(req.user, id, updatePaymentDto);
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: PaymentDto })
-  remove(@Param('id') id: string) {
-    return this.paymentsService.remove(id);
+  remove(@Request() req, @Param('id') id: string) {
+    return this.paymentsService.remove(req.user, id);
   }
 }

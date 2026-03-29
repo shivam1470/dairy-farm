@@ -1,8 +1,17 @@
 import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto } from './dto/auth.dto';
-import { AuthResponseDto, AuthUserDto } from './dto/auth-response.dto';
+import {
+  CompleteGoogleSignupDto,
+  GoogleAuthDto,
+  RegisterDto,
+  LoginDto,
+} from './dto/auth.dto';
+import {
+  AuthOnboardingResponseDto,
+  AuthResponseDto,
+  AuthUserDto,
+} from './dto/auth-response.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('auth')
@@ -21,6 +30,18 @@ export class AuthController {
   @ApiOkResponse({ type: AuthResponseDto })
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('google')
+  @ApiOkResponse({ type: AuthOnboardingResponseDto })
+  loginWithGoogle(@Body() dto: GoogleAuthDto) {
+    return this.authService.loginWithGoogle(dto);
+  }
+
+  @Post('google/complete-signup')
+  @ApiCreatedResponse({ type: AuthResponseDto })
+  completeGoogleSignup(@Body() dto: CompleteGoogleSignupDto) {
+    return this.authService.completeGoogleSignup(dto);
   }
 
   @UseGuards(JwtAuthGuard)
