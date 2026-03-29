@@ -10,13 +10,13 @@ export const menuItems: MenuItem[] = [
   { text: 'Farm Development', path: '/farm-development', icon: 'Construction' },
   { text: 'Animals', path: '/animals', icon: 'Pets' },
   { text: 'Milk Records', path: '/milk-records', icon: 'Opacity' },
-  { text: 'Payments', path: '/payments', icon: 'Payment' },
-  { text: 'Workers', path: '/workers', icon: 'People' },
+  { text: 'Payments', path: '/payments', icon: 'Payment', roles: ['ADMIN', 'MANAGER'] },
+  { text: 'Workers', path: '/workers', icon: 'People', roles: ['ADMIN', 'MANAGER'] },
   { text: 'Tasks', path: '/tasks', icon: 'Assignment' },
   { text: 'Deliveries', path: '/deliveries', icon: 'LocalShipping' },
   { text: 'Feeding', path: '/feeding', icon: 'Restaurant' },
   { text: 'Vet Visits', path: '/vet', icon: 'MedicalServices' },
-  { text: 'Settings', path: '/settings', icon: 'Settings' }
+  { text: 'Settings', path: '/settings', icon: 'Settings', roles: ['ADMIN', 'MANAGER'] }
 ];
 
 // Icon mapping for type safety

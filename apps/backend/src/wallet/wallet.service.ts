@@ -27,7 +27,10 @@ export class WalletService {
 
     // Get recent transactions
     const recentPayments = await this.prisma.payment.findMany({
-      where: { farmId: resolvedFarmId },
+      where: {
+        farmId: resolvedFarmId,
+        isDeleted: false,
+      },
       orderBy: { date: 'desc' },
       take: 10,
       include: {
@@ -45,6 +48,7 @@ export class WalletService {
     const monthlyPayments = await this.prisma.payment.findMany({
       where: {
         farmId: resolvedFarmId,
+        isDeleted: false,
         date: {
           gte: currentMonth
         }
@@ -76,7 +80,10 @@ export class WalletService {
   async updateWalletBalance(farmId: string) {
     // Calculate total income and expenses
     const payments = await this.prisma.payment.findMany({
-      where: { farmId },
+      where: {
+        farmId,
+        isDeleted: false,
+      },
       select: { type: true, amount: true }
     });
 

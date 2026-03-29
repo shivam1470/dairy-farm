@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import { menuItems } from '@/lib/navigation';
 import { useLayoutStore } from '@/store/layoutStore';
+import { useAuthStore } from '@/store/authStore';
 
 const DRAWER_WIDTH = 280; // Slightly wider for better UX
 
@@ -39,6 +40,11 @@ const Sidebar: React.FC = React.memo(() => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const pathname = usePathname();
   const { sidebarOpen, closeSidebar } = useLayoutStore();
+  const { user } = useAuthStore();
+
+  const visibleMenuItems = menuItems.filter(
+    (item) => !item.roles || (user?.role ? item.roles.includes(user.role) : false),
+  );
 
   const handleItemClick = () => {
     if (isMobile) {
@@ -88,7 +94,7 @@ const Sidebar: React.FC = React.memo(() => {
 
       {/* Navigation */}
       <Box sx={{ flex: 1, py: 1 }}>
-        {menuItems.map((item) => {
+        {visibleMenuItems.map((item) => {
           const isActive = pathname === item.path;
 
           return (

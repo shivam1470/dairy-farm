@@ -4,7 +4,7 @@ export interface User {
   email: string;
   name: string;
   role: UserRole;
-  farmId?: string;
+  farmId?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -263,6 +263,11 @@ export interface Task {
   title: string;
   description?: string;
   assignedToId?: string;
+  assignedTo?: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
   dueDate: Date;
   priority: TaskPriority;
   status: TaskStatus;
@@ -481,11 +486,14 @@ export interface Payment {
   referenceId?: string;
   referenceType?: ReferenceType;
   notes?: string;
-  isDeleted?: boolean;
+  isDeleted: boolean;
   createdById: string;
   creator?: {
     name: string;
     email: string;
+  };
+  farm?: {
+    name: string;
   };
   createdAt: Date;
   updatedAt: Date;

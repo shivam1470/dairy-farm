@@ -43,6 +43,10 @@ export type GoogleAuthResult =
       name: string;
     };
 
+export const isAuthenticatedGoogleAuthResult = (
+  result: GoogleAuthResult,
+): result is AuthResponse => !('status' in result);
+
 export const authApi = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
     const response = await apiClient.post('/auth/login', { email, password });

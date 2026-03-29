@@ -1,4 +1,14 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import {
+  Controller,
+  ForbiddenException,
+  Get,
+  HttpException,
+  NotFoundException,
+  Post,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
+import type { Request } from 'express';
 import { PrismaService } from './prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 
@@ -17,8 +27,29 @@ export class AppController {
   }
 
   @Post('seed')
-  async seed() {
+  async seed(@Req() req: Request) {
     try {
+      const isLocalSeedEnabled =
+        process.env.NODE_ENV !== 'production' &&
+        process.env.LOCAL_SEED_ENABLED === 'true';
+
+      if (!isLocalSeedEnabled) {
+        throw new NotFoundException('Not found');
+      }
+
+      const expectedSeedToken = process.env.SEED_SECRET?.trim();
+      const providedSeedToken = req.header('x-seed-token')?.trim();
+
+      if (!expectedSeedToken) {
+        throw new ForbiddenException(
+          'Seed endpoint is not configured for this environment',
+        );
+      }
+
+      if (!providedSeedToken || providedSeedToken !== expectedSeedToken) {
+        throw new UnauthorizedException('Invalid seed token');
+      }
+
       console.log('🌱 Starting database seeding...');
 
       // Clear existing data
@@ -84,6 +115,9 @@ export class AppController {
         },
       };
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       console.error('❌ Seeding failed:', error);
       return {
         success: false,

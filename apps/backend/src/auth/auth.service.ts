@@ -13,6 +13,7 @@ import {
 } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { OAuth2Client, TokenPayload } from 'google-auth-library';
+import { AuthRateLimitService } from './auth-rate-limit.service';
 
 type AppUser = {
   id: string;
@@ -42,6 +43,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private authRateLimitService: AuthRateLimitService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -74,20 +76,27 @@ export class AuthService {
     return this.buildAuthResponse(this.toAuthUser(user));
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto, ipAddress?: string) {
+    const loginKey = this.buildLoginKey(dto.email, ipAddress);
+    this.authRateLimitService.assertLoginAllowed(loginKey);
+
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
 
     if (!user?.password) {
+      this.authRateLimitService.recordLoginFailure(loginKey);
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
     if (!isPasswordValid) {
+      this.authRateLimitService.recordLoginFailure(loginKey);
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    this.authRateLimitService.clearLoginFailures(loginKey);
 
     return this.buildAuthResponse(this.toAuthUser(user));
   }
@@ -272,6 +281,10 @@ export class AuthService {
 
   private generateToken(userId: string, email: string): string {
     return this.jwtService.sign({ sub: userId, email });
+  }
+
+  private buildLoginKey(email: string, ipAddress?: string): string {
+    return `${email.toLowerCase()}:${ipAddress || 'unknown'}`;
   }
 
   private toAuthUser(user: {

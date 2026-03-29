@@ -1,6 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TaskPriority, TaskStatus } from '@prisma/client';
 
+export class TaskAssigneeDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  email: string;
+}
+
 export class TaskDto {
   @ApiProperty()
   id: string;
@@ -16,6 +27,9 @@ export class TaskDto {
 
   @ApiPropertyOptional()
   assignedToId?: string | null;
+
+  @ApiPropertyOptional({ type: TaskAssigneeDto })
+  assignedTo?: TaskAssigneeDto | null;
 
   @ApiProperty({ type: String, format: 'date-time' })
   dueDate: Date;

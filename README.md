@@ -37,6 +37,9 @@
 # Install dependencies
 pnpm install
 
+# Configure required backend env vars
+cp apps/backend/.env.example apps/backend/.env
+
 # Start PostgreSQL database
 pnpm db:start
 
@@ -143,9 +146,13 @@ pnpm format       # Code formatting
 ### Backend (.env)
 ```env
 DATABASE_URL="postgresql://..."
-JWT_SECRET="your-super-secret-jwt-key"
+JWT_SECRET="set-a-strong-secret-value"
 PORT=3001
 ```
+
+`JWT_SECRET` is required in every environment. The backend now fails fast at startup if it is missing.
+
+The development-only `/seed` route is disabled unless `LOCAL_SEED_ENABLED="true"` and requests include the `x-seed-token` header matching `SEED_SECRET`.
 
 ### Frontend (.env.local)
 ```env

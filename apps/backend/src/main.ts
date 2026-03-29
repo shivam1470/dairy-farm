@@ -2,8 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { getJwtSecret } from './auth/auth.config';
 
 async function bootstrap() {
+  getJwtSecret();
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS for frontend apps

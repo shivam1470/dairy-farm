@@ -1,5 +1,23 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaymentMethod, PaymentStatus, PaymentType } from '@prisma/client';
+import {
+  PaymentCategory,
+  PaymentMethod,
+  PaymentType,
+  ReferenceType,
+} from '@prisma/client';
+
+export class PaymentCreatorDto {
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  email: string;
+}
+
+export class PaymentFarmDto {
+  @ApiProperty()
+  name: string;
+}
 
 export class PaymentDto {
   @ApiProperty()
@@ -11,36 +29,53 @@ export class PaymentDto {
   @ApiProperty({ enum: PaymentType })
   type: PaymentType;
 
-  @ApiProperty({ enum: PaymentMethod })
-  method: PaymentMethod;
-
-  @ApiProperty({ enum: PaymentStatus })
-  status: PaymentStatus;
+  @ApiProperty({ enum: PaymentCategory })
+  category: PaymentCategory;
 
   @ApiProperty()
   amount: number;
 
-  @ApiPropertyOptional()
-  description?: string | null;
+  @ApiProperty()
+  description: string;
 
-  @ApiPropertyOptional({ type: String, format: 'date-time' })
-  date?: Date | null;
+  @ApiProperty({ type: String, format: 'date-time' })
+  date: Date;
 
-  @ApiPropertyOptional()
-  reference?: string | null;
+  @ApiProperty({ type: String, format: 'date-time' })
+  transactionDate: Date;
 
-  @ApiPropertyOptional()
-  payerName?: string | null;
+  @ApiProperty({ enum: PaymentMethod })
+  paymentMethod: PaymentMethod;
 
-  @ApiPropertyOptional()
-  payerMobile?: string | null;
+  @ApiPropertyOptional({ nullable: true })
+  referenceId?: string | null;
 
-  @ApiPropertyOptional()
-  payerEmail?: string | null;
+  @ApiPropertyOptional({ enum: ReferenceType, nullable: true })
+  referenceType?: ReferenceType | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  notes?: string | null;
+
+  @ApiProperty()
+  isDeleted: boolean;
+
+  @ApiProperty()
+  createdById: string;
+
+  @ApiPropertyOptional({ type: PaymentCreatorDto })
+  creator?: PaymentCreatorDto;
+
+  @ApiPropertyOptional({ type: PaymentFarmDto })
+  farm?: PaymentFarmDto;
 
   @ApiProperty({ type: String, format: 'date-time' })
   createdAt: Date;
 
   @ApiProperty({ type: String, format: 'date-time' })
   updatedAt: Date;
+}
+
+export class DeletePaymentResponseDto {
+  @ApiProperty()
+  message: string;
 }

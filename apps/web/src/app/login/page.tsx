@@ -28,7 +28,7 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
-import { authApi } from '@/lib/auth-api';
+import { authApi, isAuthenticatedGoogleAuthResult } from '@/lib/auth-api';
 import { useAuthStore } from '@/store/authStore';
 
 declare global {
@@ -83,7 +83,7 @@ export default function LoginPage() {
         setGoogleLoading(true);
         const result = await authApi.googleLogin(response.credential);
 
-        if ('status' in result && result.status === 'ONBOARDING_REQUIRED') {
+        if (!isAuthenticatedGoogleAuthResult(result)) {
           setOnboarding({
             onboardingToken: result.onboardingToken,
             email: result.email,

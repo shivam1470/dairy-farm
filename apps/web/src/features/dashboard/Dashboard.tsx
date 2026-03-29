@@ -45,7 +45,7 @@ type DashboardData = {
   milkRecords: MilkRecord[];
   tasks: Task[];
   workers: Worker[];
-  walletSummary: WalletSummary;
+  walletSummary: WalletSummary | null;
   progressStats: ProgressStats;
 };
 
@@ -202,6 +202,8 @@ const Dashboard: React.FC = () => {
   const router = useRouter();
   const { user } = useAuthStore();
   const farmId = user?.farmId;
+  const canViewFinance = user?.role === 'ADMIN' || user?.role === 'MANAGER';
+  const canViewWorkers = user?.role === 'ADMIN' || user?.role === 'MANAGER';
 
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -221,8 +223,8 @@ const Dashboard: React.FC = () => {
         animalsApi.getAll(farmId),
         milkRecordsApi.getAll(farmId),
         tasksApi.list(farmId),
-        workersApi.list(farmId),
-        walletApi.getWalletSummary(farmId),
+        canViewWorkers ? workersApi.list(farmId) : Promise.resolve([]),
+        canViewFinance ? walletApi.getWalletSummary(farmId) : Promise.resolve(null),
         getProgressStats(farmId),
       ]);
 
@@ -239,7 +241,7 @@ const Dashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [farmId]);
+  }, [canViewFinance, canViewWorkers, farmId]);
 
   useEffect(() => {
     loadDashboard();
@@ -268,7 +270,9 @@ const Dashboard: React.FC = () => {
       ...getActivityFromAnimals(
         [...data.animals].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
       ),
-      ...getActivityFromPayments(data.walletSummary.recentTransactions),
+      ...(data.walletSummary
+        ? getActivityFromPayments(data.walletSummary.recentTransactions)
+        : []),
       ...getActivityFromTasks(
         [...data.tasks].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
       ),
@@ -305,11 +309,15 @@ const Dashboard: React.FC = () => {
       description: 'Assign work before the next shift starts',
       path: '/tasks',
     },
-    {
-      label: 'Track Payment',
-      description: 'Capture incoming sales or farm expenses',
-      path: '/payments',
-    },
+    ...(canViewFinance
+      ? [
+          {
+            label: 'Track Payment',
+            description: 'Capture incoming sales or farm expenses',
+            path: '/payments',
+          },
+        ]
+      : []),
   ];
 
   if (!farmId) {
@@ -342,9 +350,9 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  const monthlyIncome = data.walletSummary.monthlySummary.income;
-  const monthlyExpenses = data.walletSummary.monthlySummary.expenses;
-  const monthlyNet = data.walletSummary.monthlySummary.net;
+  const monthlyIncome = data.walletSummary?.monthlySummary.income ?? 0;
+  const monthlyExpenses = data.walletSummary?.monthlySummary.expenses ?? 0;
+  const monthlyNet = data.walletSummary?.monthlySummary.net ?? 0;
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -364,11 +372,13 @@ const Dashboard: React.FC = () => {
           </Typography>
         </Box>
         <Stack direction="row" spacing={1} flexWrap="wrap">
-          <Chip
-            color={monthlyNet >= 0 ? 'success' : 'error'}
-            icon={monthlyNet >= 0 ? <TrendingUp /> : <TrendingDown />}
-            label={`Monthly net ${toCurrency(monthlyNet)}`}
-          />
+          {canViewFinance && data.walletSummary ? (
+            <Chip
+              color={monthlyNet >= 0 ? 'success' : 'error'}
+              icon={monthlyNet >= 0 ? <TrendingUp /> : <TrendingDown />}
+              label={`Monthly net ${toCurrency(monthlyNet)}`}
+            />
+          ) : null}
           <Chip
             color="primary"
             icon={<Construction />}
@@ -398,16 +408,18 @@ const Dashboard: React.FC = () => {
             testId="dashboard-stat-milk"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Monthly Income"
-            value={toCurrency(monthlyIncome)}
-            supportingText={`Expenses ${toCurrency(monthlyExpenses)} • Balance ${toCurrency(data.walletSummary.currentBalance)}`}
-            icon={<AttachMoney />}
-            tone={monthlyNet >= 0 ? 'success' : 'error'}
-            testId="dashboard-stat-finance"
-          />
-        </Grid>
+        {canViewFinance && data.walletSummary ? (
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="Monthly Income"
+              value={toCurrency(monthlyIncome)}
+              supportingText={`Expenses ${toCurrency(monthlyExpenses)} • Balance ${toCurrency(data.walletSummary.currentBalance)}`}
+              icon={<AttachMoney />}
+              tone={monthlyNet >= 0 ? 'success' : 'error'}
+              testId="dashboard-stat-finance"
+            />
+          </Grid>
+        ) : null}
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Workers & Tasks"
@@ -555,66 +567,68 @@ const Dashboard: React.FC = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={5}>
-          <Paper sx={{ p: 3, height: '100%' }} data-testid="dashboard-financial-pulse">
-            <Typography variant="h6" fontWeight={700} gutterBottom>
-              Financial Pulse
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Monthly cash movement and wallet position for this farm.
-            </Typography>
-            <Stack spacing={2}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Current Wallet Balance
-                  </Typography>
-                  <Typography variant="h4" fontWeight={700}>
-                    {toCurrency(data.walletSummary.currentBalance)}
-                  </Typography>
-                </CardContent>
-              </Card>
-              <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="body2" color="text.secondary">
-                        Income
-                      </Typography>
-                      <Typography variant="h6" color="success.main">
-                        {toCurrency(monthlyIncome)}
-                      </Typography>
-                    </CardContent>
-                  </Card>
+        {canViewFinance && data.walletSummary ? (
+          <Grid item xs={12} md={5}>
+            <Paper sx={{ p: 3, height: '100%' }} data-testid="dashboard-financial-pulse">
+              <Typography variant="h6" fontWeight={700} gutterBottom>
+                Financial Pulse
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Monthly cash movement and wallet position for this farm.
+              </Typography>
+              <Stack spacing={2}>
+                <Card variant="outlined">
+                  <CardContent>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Current Wallet Balance
+                    </Typography>
+                    <Typography variant="h4" fontWeight={700}>
+                      {toCurrency(data.walletSummary.currentBalance)}
+                    </Typography>
+                  </CardContent>
+                </Card>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography variant="body2" color="text.secondary">
+                          Income
+                        </Typography>
+                        <Typography variant="h6" color="success.main">
+                          {toCurrency(monthlyIncome)}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography variant="body2" color="text.secondary">
+                          Expenses
+                        </Typography>
+                        <Typography variant="h6" color="error.main">
+                          {toCurrency(monthlyExpenses)}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography variant="body2" color="text.secondary">
+                          Net
+                        </Typography>
+                        <Typography variant="h6" color={monthlyNet >= 0 ? 'success.main' : 'error.main'}>
+                          {toCurrency(monthlyNet)}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="body2" color="text.secondary">
-                        Expenses
-                      </Typography>
-                      <Typography variant="h6" color="error.main">
-                        {toCurrency(monthlyExpenses)}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={4}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="body2" color="text.secondary">
-                        Net
-                      </Typography>
-                      <Typography variant="h6" color={monthlyNet >= 0 ? 'success.main' : 'error.main'}>
-                        {toCurrency(monthlyNet)}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
-            </Stack>
-          </Paper>
-        </Grid>
+              </Stack>
+            </Paper>
+          </Grid>
+        ) : null}
       </Grid>
     </Container>
   );

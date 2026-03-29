@@ -3,6 +3,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
+  Tabs,
+  Tab,
   Box,
   Button,
   Container,
@@ -35,6 +37,9 @@ const Tasks: React.FC = () => {
   const { user } = useAuthStore();
   const farmId = user?.farmId;
   const createdById = user?.id;
+  const isManager = user?.role === 'ADMIN' || user?.role === 'MANAGER';
+  const isWorker = user?.role === 'WORKER';
+  const userId = user?.id;
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +47,7 @@ const Tasks: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [workerView, setWorkerView] = useState<'mine' | 'all'>('mine');
   const [createValues, setCreateValues] = useState<Omit<CreateTaskDto, 'farmId' | 'createdById'>>({
     title: '',
     description: '',
@@ -132,6 +138,40 @@ const Tasks: React.FC = () => {
     }
   };
 
+  const canUpdateTask = (task: Task) =>
+    isManager || (isWorker && task.assignedToId === user?.id);
+
+  const canDeleteTask = isManager;
+
+  const getAssignmentLabel = (task: Task) => {
+    if (task.assignedToId === userId) {
+      return task.assignedTo?.name
+        ? `Assigned to me (${task.assignedTo.name})`
+        : 'Assigned to me';
+    }
+    if (!task.assignedToId) return 'Unassigned';
+    if (task.assignedTo?.name) return `Assigned to ${task.assignedTo.name}`;
+    return 'Assigned to teammate';
+  };
+
+  const visibleTasks = useMemo(() => {
+    const source =
+      isWorker && workerView === 'mine'
+        ? tasks.filter((task) => task.assignedToId === userId)
+        : tasks;
+
+    return [...source].sort((left, right) => {
+      const leftIsMine = left.assignedToId === userId ? 1 : 0;
+      const rightIsMine = right.assignedToId === userId ? 1 : 0;
+
+      if (leftIsMine !== rightIsMine) {
+        return rightIsMine - leftIsMine;
+      }
+
+      return new Date(left.dueDate).getTime() - new Date(right.dueDate).getTime();
+    });
+  }, [isWorker, tasks, userId, workerView]);
+
   const statusColor = (status: TaskStatus) => {
     switch (status) {
       case TaskStatus.COMPLETED:
@@ -148,13 +188,35 @@ const Tasks: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" gutterBottom data-testid="tasks-title">
-          Tasks
-        </Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={openCreate} data-testid="tasks-add">
-          Add Task
-        </Button>
+        <Box>
+          <Typography variant="h4" gutterBottom data-testid="tasks-title">
+            Tasks
+          </Typography>
+          {isWorker ? (
+            <Typography variant="body2" color="text.secondary">
+              Your assigned work is highlighted so you can act on it quickly.
+            </Typography>
+          ) : null}
+        </Box>
+        {isManager ? (
+          <Button variant="contained" startIcon={<Add />} onClick={openCreate} data-testid="tasks-add">
+            Add Task
+          </Button>
+        ) : null}
       </Box>
+
+      {isWorker ? (
+        <Box mb={2}>
+          <Tabs
+            value={workerView}
+            onChange={(_, value) => setWorkerView(value)}
+            aria-label="task ownership filter"
+          >
+            <Tab value="mine" label="My Tasks" />
+            <Tab value="all" label="All Farm Tasks" />
+          </Tabs>
+        </Box>
+      ) : null}
 
       {loading ? (
         <Typography>Loading tasks...</Typography>
@@ -164,6 +226,7 @@ const Tasks: React.FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Title</TableCell>
+                <TableCell>Assignment</TableCell>
                 <TableCell>Due</TableCell>
                 <TableCell>Priority</TableCell>
                 <TableCell>Status</TableCell>
@@ -172,14 +235,18 @@ const Tasks: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {tasks.length === 0 ? (
+              {visibleTasks.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6}>
-                    <Typography color="text.secondary">No tasks found.</Typography>
+                  <TableCell colSpan={7}>
+                    <Typography color="text.secondary">
+                      {isWorker && workerView === 'mine'
+                        ? 'No tasks are currently assigned to you.'
+                        : 'No tasks found.'}
+                    </Typography>
                   </TableCell>
                 </TableRow>
               ) : (
-                tasks.map((t) => (
+                visibleTasks.map((t) => (
                   <TableRow key={t.id} data-testid={`task-row-${t.id}`}>
                     <TableCell>
                       <Typography fontWeight={600}>{t.title}</Typography>
@@ -188,6 +255,14 @@ const Tasks: React.FC = () => {
                           {t.description}
                         </Typography>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={getAssignmentLabel(t)}
+                        color={t.assignedToId === userId ? 'primary' : 'default'}
+                        variant={t.assignedToId === userId ? 'filled' : 'outlined'}
+                        size="small"
+                      />
                     </TableCell>
                     <TableCell>{new Date(t.dueDate).toLocaleDateString('en-IN')}</TableCell>
                     <TableCell>{t.priority}</TableCell>
@@ -200,7 +275,11 @@ const Tasks: React.FC = () => {
                         size="small"
                         startIcon={<PlayArrow />}
                         onClick={() => updateStatus(t, TaskStatus.IN_PROGRESS)}
-                        disabled={t.status === TaskStatus.IN_PROGRESS || t.status === TaskStatus.COMPLETED}
+                        disabled={
+                          !canUpdateTask(t) ||
+                          t.status === TaskStatus.IN_PROGRESS ||
+                          t.status === TaskStatus.COMPLETED
+                        }
                         data-testid={`task-start-${t.id}`}
                       >
                         Start
@@ -210,20 +289,22 @@ const Tasks: React.FC = () => {
                         color="success"
                         startIcon={<CheckCircle />}
                         onClick={() => updateStatus(t, TaskStatus.COMPLETED)}
-                        disabled={t.status === TaskStatus.COMPLETED}
+                        disabled={!canUpdateTask(t) || t.status === TaskStatus.COMPLETED}
                         data-testid={`task-complete-${t.id}`}
                       >
                         Complete
                       </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        startIcon={<Delete />}
-                        onClick={() => handleDelete(t.id)}
-                        data-testid={`task-delete-${t.id}`}
-                      >
-                        Delete
-                      </Button>
+                      {canDeleteTask ? (
+                        <Button
+                          size="small"
+                          color="error"
+                          startIcon={<Delete />}
+                          onClick={() => handleDelete(t.id)}
+                          data-testid={`task-delete-${t.id}`}
+                        >
+                          Delete
+                        </Button>
+                      ) : null}
                     </TableCell>
                   </TableRow>
                 ))

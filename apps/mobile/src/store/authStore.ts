@@ -6,7 +6,7 @@ interface User {
   email: string;
   name: string;
   role: string;
-  farmId?: string;
+  farmId?: string | null;
 }
 
 interface AuthState {

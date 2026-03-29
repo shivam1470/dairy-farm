@@ -52,6 +52,7 @@ function bootBackend({ port }) {
       ...process.env,
       PORT: String(port),
       NODE_ENV: process.env.NODE_ENV || 'development',
+      SKIP_DB_CONNECT: 'true',
     },
     stdio: 'inherit',
   });
