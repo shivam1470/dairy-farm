@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePaymentDto, UpdatePaymentDto } from './dto/create-payment.dto';
 
@@ -7,23 +7,26 @@ export class PaymentsService {
   // eslint-disable-next-line no-unused-vars
   constructor(private prisma: PrismaService) {}
 
-  async create(createPaymentDto: CreatePaymentDto, userId: string) {
+  async create(user: any, createPaymentDto: CreatePaymentDto) {
+    const farmId = this.requireFarmId(user);
     const data = {
       ...createPaymentDto,
+      farmId,
       date: new Date(createPaymentDto.date),
       transactionDate: new Date(createPaymentDto.transactionDate),
-      createdById: userId,
+      createdById: user.id,
     };
 
     const payment = await this.prisma.payment.create({ data });
 
     // Update wallet balance
-    await this.updateWalletBalance(createPaymentDto.farmId);
+    await this.updateWalletBalance(farmId);
 
     return payment;
   }
 
-  async findAll(farmId: string) {
+  async findAll(user: any) {
+    const farmId = this.requireFarmId(user);
     return this.prisma.payment.findMany({
       where: { 
         farmId,
@@ -38,9 +41,10 @@ export class PaymentsService {
     });
   }
 
-  async findOne(id: string) {
-    const payment = await this.prisma.payment.findUnique({
-      where: { id },
+  async findOne(user: any, id: string) {
+    const farmId = this.requireFarmId(user);
+    const payment = await this.prisma.payment.findFirst({
+      where: { id, farmId },
       include: {
         creator: {
           select: { name: true, email: true }
@@ -58,11 +62,12 @@ export class PaymentsService {
     return payment;
   }
 
-  async update(id: string, updatePaymentDto: UpdatePaymentDto) {
-    const existingPayment = await this.findOne(id);
+  async update(user: any, id: string, updatePaymentDto: UpdatePaymentDto) {
+    const existingPayment = await this.findOne(user, id);
+    const { farmId: _farmId, createdById: _createdById, ...safeData } = updatePaymentDto as any;
 
     const data = {
-      ...updatePaymentDto,
+      ...safeData,
       ...(updatePaymentDto.date && { date: new Date(updatePaymentDto.date) }),
       ...(updatePaymentDto.transactionDate && { transactionDate: new Date(updatePaymentDto.transactionDate) })
     };
@@ -78,8 +83,8 @@ export class PaymentsService {
     return payment;
   }
 
-  async remove(id: string) {
-    const payment = await this.findOne(id);
+  async remove(user: any, id: string) {
+    const payment = await this.findOne(user, id);
 
     await this.prisma.payment.update({
       where: { id },
@@ -140,7 +145,8 @@ export class PaymentsService {
     return wallet;
   }
 
-  async findIncome(farmId: string) {
+  async findIncome(user: any) {
+    const farmId = this.requireFarmId(user);
     return this.prisma.payment.findMany({
       where: { 
         farmId,
@@ -156,7 +162,8 @@ export class PaymentsService {
     });
   }
 
-  async findExpenses(farmId: string) {
+  async findExpenses(user: any) {
+    const farmId = this.requireFarmId(user);
     return this.prisma.payment.findMany({
       where: { 
         farmId,
@@ -170,5 +177,10 @@ export class PaymentsService {
       },
       orderBy: { transactionDate: 'desc' }
     });
+  }
+
+  private requireFarmId(user: any) {
+    if (!user?.farmId) throw new ForbiddenException('User is not assigned to a farm');
+    return user.farmId as string;
   }
 }

@@ -3,9 +3,10 @@ import { IsString, IsDateString, IsEnum, IsOptional, IsNumber } from 'class-vali
 import { FeedingTime, FeedType } from '@prisma/client';
 
 export class CreateFeedingLogDto {
-  @ApiProperty({ example: 'farm_123' })
+  @ApiPropertyOptional({ example: 'farm_123', description: 'Derived from the authenticated user on the server.' })
+  @IsOptional()
   @IsString()
-  farmId: string;
+  farmId?: string;
 
   @ApiProperty({ example: 'animal_123' })
   @IsString()
@@ -37,7 +38,8 @@ export class CreateFeedingLogDto {
   @IsString()
   notes?: string;
 
-  @ApiProperty({ example: 'user_123' })
+  @ApiPropertyOptional({ example: 'user_123', description: 'Derived from the authenticated user on the server.' })
+  @IsOptional()
   @IsString()
-  recordedById: string;
+  recordedById?: string;
 }

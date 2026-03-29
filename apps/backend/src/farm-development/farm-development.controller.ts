@@ -6,8 +6,10 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { FarmDevelopmentService } from './farm-development.service';
 import { CreatePhaseDto } from './dto/create-phase.dto';
@@ -18,9 +20,11 @@ import {
   FarmDevelopmentMilestoneDto,
   FarmDevelopmentPhaseDto,
 } from './dto/farm-development-response.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('farm-development')
 @Controller('farm-development')
+@UseGuards(JwtAuthGuard)
 export class FarmDevelopmentController {
   constructor(
     private readonly farmDevelopmentService: FarmDevelopmentService,
@@ -29,57 +33,60 @@ export class FarmDevelopmentController {
   // Phase endpoints
   @Get('phases')
   @ApiOkResponse({ type: [FarmDevelopmentPhaseDto] })
-  getPhases(@Query('farmId') farmId: string) {
-    return this.farmDevelopmentService.getPhasesByFarm(farmId);
+  getPhases(@Req() req: Request) {
+    return this.farmDevelopmentService.getPhasesByFarm((req.user as any).farmId);
   }
 
   @Get('phases/:id')
   @ApiOkResponse({ type: FarmDevelopmentPhaseDto })
-  getPhase(@Param('id') id: string) {
-    return this.farmDevelopmentService.getPhaseById(id);
+  getPhase(@Req() req: Request, @Param('id') id: string) {
+    return this.farmDevelopmentService.getPhaseById((req.user as any).farmId, id);
   }
 
   @Post('phases')
   @ApiCreatedResponse({ type: FarmDevelopmentPhaseDto })
-  createPhase(@Body() createPhaseDto: CreatePhaseDto) {
-    return this.farmDevelopmentService.createPhase(createPhaseDto);
+  createPhase(@Req() req: Request, @Body() createPhaseDto: CreatePhaseDto) {
+    return this.farmDevelopmentService.createPhase((req.user as any), createPhaseDto);
   }
 
   @Patch('phases/:id')
   @ApiOkResponse({ type: FarmDevelopmentPhaseDto })
   updatePhase(
+    @Req() req: Request,
     @Param('id') id: string,
     @Body() updatePhaseDto: UpdatePhaseDto,
   ) {
-    return this.farmDevelopmentService.updatePhase(id, updatePhaseDto);
+    return this.farmDevelopmentService.updatePhase((req.user as any).farmId, id, updatePhaseDto);
   }
 
   @Delete('phases/:id')
   @ApiOkResponse({ type: FarmDevelopmentPhaseDto })
-  deletePhase(@Param('id') id: string) {
-    return this.farmDevelopmentService.deletePhase(id);
+  deletePhase(@Req() req: Request, @Param('id') id: string) {
+    return this.farmDevelopmentService.deletePhase((req.user as any).farmId, id);
   }
 
   // Milestone endpoints
   @Get('phases/:phaseId/milestones')
   @ApiOkResponse({ type: [FarmDevelopmentMilestoneDto] })
-  getMilestones(@Param('phaseId') phaseId: string) {
-    return this.farmDevelopmentService.getMilestonesByPhase(phaseId);
+  getMilestones(@Req() req: Request, @Param('phaseId') phaseId: string) {
+    return this.farmDevelopmentService.getMilestonesByPhase((req.user as any).farmId, phaseId);
   }
 
   @Get('milestones/:id')
   @ApiOkResponse({ type: FarmDevelopmentMilestoneDto })
-  getMilestone(@Param('id') id: string) {
-    return this.farmDevelopmentService.getMilestoneById(id);
+  getMilestone(@Req() req: Request, @Param('id') id: string) {
+    return this.farmDevelopmentService.getMilestoneById((req.user as any).farmId, id);
   }
 
   @Post('phases/:phaseId/milestones')
   @ApiCreatedResponse({ type: FarmDevelopmentMilestoneDto })
   createMilestone(
+    @Req() req: Request,
     @Param('phaseId') phaseId: string,
     @Body() createMilestoneDto: CreateMilestoneDto,
   ) {
     return this.farmDevelopmentService.createMilestone(
+      (req.user as any).farmId,
       phaseId,
       createMilestoneDto,
     );
@@ -88,28 +95,28 @@ export class FarmDevelopmentController {
   @Patch('milestones/:id')
   @ApiOkResponse({ type: FarmDevelopmentMilestoneDto })
   updateMilestone(
+    @Req() req: Request,
     @Param('id') id: string,
     @Body() updateMilestoneDto: UpdateMilestoneDto,
   ) {
-    return this.farmDevelopmentService.updateMilestone(id, updateMilestoneDto);
+    return this.farmDevelopmentService.updateMilestone((req.user as any).farmId, id, updateMilestoneDto);
   }
 
   @Patch('milestones/:id/complete')
   @ApiOkResponse({ type: FarmDevelopmentMilestoneDto })
-  completeMilestone(@Param('id') id: string) {
-    return this.farmDevelopmentService.completeMilestone(id);
+  completeMilestone(@Req() req: Request, @Param('id') id: string) {
+    return this.farmDevelopmentService.completeMilestone((req.user as any).farmId, id);
   }
 
   @Delete('milestones/:id')
   @ApiOkResponse({ type: FarmDevelopmentMilestoneDto })
-  deleteMilestone(@Param('id') id: string) {
-    return this.farmDevelopmentService.deleteMilestone(id);
+  deleteMilestone(@Req() req: Request, @Param('id') id: string) {
+    return this.farmDevelopmentService.deleteMilestone((req.user as any).farmId, id);
   }
 
   // Progress and stats endpoints
   @Get('progress')
-  getProgress(@Query('farmId') farmId: string) {
-    return this.farmDevelopmentService.getProgressStats(farmId);
+  getProgress(@Req() req: Request) {
+    return this.farmDevelopmentService.getProgressStats((req.user as any).farmId);
   }
 }
-

@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { WorkersService } from './workers.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -14,31 +15,31 @@ export class WorkersController {
 
   @Post()
   @ApiCreatedResponse({ type: WorkerDto })
-  create(@Body() createWorkerDto: CreateWorkerDto) {
-    return this.workersService.create(createWorkerDto);
+  create(@Req() req: Request, @Body() createWorkerDto: CreateWorkerDto) {
+    return this.workersService.create(req.user as any, createWorkerDto);
   }
 
   @Get()
   @ApiOkResponse({ type: WorkerDto, isArray: true })
-  findAll(@Query('farmId') farmId: string) {
-    return this.workersService.findAll(farmId);
+  findAll(@Req() req: Request) {
+    return this.workersService.findAll(req.user as any);
   }
 
   @Get(':id')
   @ApiOkResponse({ type: WorkerDto })
-  findOne(@Param('id') id: string) {
-    return this.workersService.findOne(id);
+  findOne(@Req() req: Request, @Param('id') id: string) {
+    return this.workersService.findOne(req.user as any, id);
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: WorkerDto })
-  update(@Param('id') id: string, @Body() updateWorkerDto: UpdateWorkerDto) {
-    return this.workersService.update(id, updateWorkerDto);
+  update(@Req() req: Request, @Param('id') id: string, @Body() updateWorkerDto: UpdateWorkerDto) {
+    return this.workersService.update(req.user as any, id, updateWorkerDto);
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: WorkerDto })
-  remove(@Param('id') id: string) {
-    return this.workersService.remove(id);
+  remove(@Req() req: Request, @Param('id') id: string) {
+    return this.workersService.remove(req.user as any, id);
   }
 }

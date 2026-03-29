@@ -3,9 +3,10 @@ import { IsString, IsDateString, IsEnum, IsOptional, IsNumber } from 'class-vali
 import { DeliveryStatus, PaymentStatus } from '@prisma/client';
 
 export class CreateDeliveryDto {
-  @ApiProperty({ example: 'farm_123' })
+  @ApiPropertyOptional({ example: 'farm_123', description: 'Derived from the authenticated user on the server.' })
+  @IsOptional()
   @IsString()
-  farmId: string;
+  farmId?: string;
 
   @ApiProperty({ example: '2026-03-10' })
   @IsDateString()
@@ -50,7 +51,8 @@ export class CreateDeliveryDto {
   @IsString()
   notes?: string;
 
-  @ApiProperty({ example: 'user_123' })
+  @ApiPropertyOptional({ example: 'user_123', description: 'Derived from the authenticated user on the server.' })
+  @IsOptional()
   @IsString()
-  createdById: string;
+  createdById?: string;
 }

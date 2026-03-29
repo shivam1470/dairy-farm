@@ -24,3 +24,17 @@ export class AuthResponseDto {
   @ApiProperty({ type: AuthUserDto })
   user: AuthUserDto;
 }
+
+export class AuthOnboardingResponseDto {
+  @ApiProperty({ enum: ['ONBOARDING_REQUIRED'] })
+  status: 'ONBOARDING_REQUIRED';
+
+  @ApiProperty()
+  onboardingToken: string;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  name: string;
+}

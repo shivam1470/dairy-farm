@@ -67,9 +67,10 @@ export class CreatePaymentDto {
   @IsEnum(PaymentMethod)
   paymentMethod: PaymentMethod;
 
-  @ApiProperty({ example: 'farm_123' })
+  @ApiPropertyOptional({ example: 'farm_123', description: 'Derived from the authenticated user on the server.' })
+  @IsOptional()
   @IsString()
-  farmId: string;
+  farmId?: string;
 
   @ApiPropertyOptional({ example: 'expense_123' })
   @IsOptional()

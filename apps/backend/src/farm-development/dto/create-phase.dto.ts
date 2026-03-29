@@ -11,9 +11,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DevelopmentStatus } from '@prisma/client';
 
 export class CreatePhaseDto {
-  @ApiProperty({ example: 'farm_123' })
+  @ApiPropertyOptional({ example: 'farm_123', description: 'Derived from the authenticated user on the server.' })
+  @IsOptional()
   @IsString()
-  farmId: string;
+  farmId?: string;
 
   @ApiProperty({ example: 'Shed Construction' })
   @IsString()
@@ -61,4 +62,3 @@ export class CreatePhaseDto {
   @IsString()
   notes?: string;
 }
-

@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -8,12 +8,12 @@ export class WalletController {
   constructor(private walletService: WalletService) {}
 
   @Get()
-  getWallet(@Query('farmId') farmId: string) {
-    return this.walletService.getWallet(farmId);
+  getWallet(@Request() req) {
+    return this.walletService.getWallet(req.user?.farmId);
   }
 
   @Get('summary')
-  getWalletWithTransactions(@Query('farmId') farmId: string) {
-    return this.walletService.getWalletWithTransactions(farmId);
+  getWalletWithTransactions(@Request() req) {
+    return this.walletService.getWalletWithTransactions(req.user?.farmId);
   }
 }

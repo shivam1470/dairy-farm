@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { DeliveriesService } from './deliveries.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -14,31 +15,31 @@ export class DeliveriesController {
 
   @Post()
   @ApiCreatedResponse({ type: DeliveryDto })
-  create(@Body() createDeliveryDto: CreateDeliveryDto) {
-    return this.deliveriesService.create(createDeliveryDto);
+  create(@Req() req: Request, @Body() createDeliveryDto: CreateDeliveryDto) {
+    return this.deliveriesService.create(req.user as any, createDeliveryDto);
   }
 
   @Get()
   @ApiOkResponse({ type: [DeliveryDto] })
-  findAll(@Query('farmId') farmId: string) {
-    return this.deliveriesService.findAll(farmId);
+  findAll(@Req() req: Request) {
+    return this.deliveriesService.findAll(req.user as any);
   }
 
   @Get(':id')
   @ApiOkResponse({ type: DeliveryDto })
-  findOne(@Param('id') id: string) {
-    return this.deliveriesService.findOne(id);
+  findOne(@Req() req: Request, @Param('id') id: string) {
+    return this.deliveriesService.findOne(req.user as any, id);
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: DeliveryDto })
-  update(@Param('id') id: string, @Body() updateDeliveryDto: UpdateDeliveryDto) {
-    return this.deliveriesService.update(id, updateDeliveryDto);
+  update(@Req() req: Request, @Param('id') id: string, @Body() updateDeliveryDto: UpdateDeliveryDto) {
+    return this.deliveriesService.update(req.user as any, id, updateDeliveryDto);
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: DeliveryDto })
-  remove(@Param('id') id: string) {
-    return this.deliveriesService.remove(id);
+  remove(@Req() req: Request, @Param('id') id: string) {
+    return this.deliveriesService.remove(req.user as any, id);
   }
 }

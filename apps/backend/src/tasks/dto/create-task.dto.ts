@@ -3,9 +3,10 @@ import { IsString, IsDateString, IsEnum, IsOptional } from 'class-validator';
 import { TaskPriority, TaskStatus } from '@prisma/client';
 
 export class CreateTaskDto {
-  @ApiProperty({ example: 'farm_123' })
+  @ApiPropertyOptional({ example: 'farm_123', description: 'Derived from the authenticated user on the server.' })
+  @IsOptional()
   @IsString()
-  farmId: string;
+  farmId?: string;
 
   @ApiProperty({ example: 'Clean shed' })
   @IsString()
@@ -38,7 +39,8 @@ export class CreateTaskDto {
   @IsString()
   notes?: string;
 
-  @ApiProperty({ example: 'user_123' })
+  @ApiPropertyOptional({ example: 'user_123', description: 'Derived from the authenticated user on the server.' })
+  @IsOptional()
   @IsString()
-  createdById: string;
+  createdById?: string;
 }

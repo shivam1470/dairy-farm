@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePhaseDto } from './dto/create-phase.dto';
 import { UpdatePhaseDto } from './dto/update-phase.dto';
@@ -15,19 +15,19 @@ export class FarmDevelopmentService {
   constructor(private prisma: PrismaService) {}
 
   // Phase CRUD Operations
-  async createPhase(data: CreatePhaseDto) {
-    // Validate that the farm exists
+  async createPhase(user: any, data: CreatePhaseDto) {
+    const farmId = this.requireFarmId(user);
     const farm = await this.prisma.farm.findUnique({
-      where: { id: data.farmId },
+      where: { id: farmId },
     });
 
     if (!farm) {
-      throw new NotFoundException(`Farm with ID ${data.farmId} not found`);
+      throw new NotFoundException(`Farm with ID ${farmId} not found`);
     }
 
     const phase = await this.prisma.farmDevelopmentPhase.create({
       data: {
-        farmId: data.farmId,
+        farmId,
         phaseName: data.phaseName,
         description: data.description,
         phaseOrder: data.phaseOrder ?? 0,
@@ -47,6 +47,7 @@ export class FarmDevelopmentService {
   }
 
   async getPhasesByFarm(farmId: string) {
+    this.requireFarmId({ farmId });
     return this.prisma.farmDevelopmentPhase.findMany({
       where: { farmId },
       include: {
@@ -67,9 +68,9 @@ export class FarmDevelopmentService {
     });
   }
 
-  async getPhaseById(id: string) {
-    const phase = await this.prisma.farmDevelopmentPhase.findUnique({
-      where: { id },
+  async getPhaseById(farmId: string, id: string) {
+    const phase = await this.prisma.farmDevelopmentPhase.findFirst({
+      where: { id, farmId },
       include: {
         milestones: {
           orderBy: { milestoneOrder: 'asc' },
@@ -93,8 +94,8 @@ export class FarmDevelopmentService {
     return phase;
   }
 
-  async updatePhase(id: string, data: UpdatePhaseDto) {
-    // const phase = await this.getPhaseById(id); // Not needed for update
+  async updatePhase(farmId: string, id: string, data: UpdatePhaseDto) {
+    await this.getPhaseById(farmId, id);
 
     const updateData: any = {};
     if (data.phaseName !== undefined) updateData.phaseName = data.phaseName;
@@ -125,13 +126,13 @@ export class FarmDevelopmentService {
     });
 
     // Auto-update phase status based on milestones
-    await this.updatePhaseStatus(id);
+    await this.updatePhaseStatus(farmId, id);
 
     return updatedPhase;
   }
 
-  async deletePhase(id: string) {
-    await this.getPhaseById(id);
+  async deletePhase(farmId: string, id: string) {
+    await this.getPhaseById(farmId, id);
     await this.prisma.farmDevelopmentPhase.delete({
       where: { id },
     });
@@ -139,8 +140,11 @@ export class FarmDevelopmentService {
   }
 
   // Milestone CRUD Operations
-  async createMilestone(phaseId: string, data: CreateMilestoneDto) {
-    // const phase = await this.getPhaseById(phaseId); // Not needed for creation
+  async createMilestone(farmId: string, phaseId: string, data: CreateMilestoneDto) {
+    await this.getPhaseById(farmId, phaseId);
+    if (data.assignedToId) {
+      await this.ensureUserAccess(farmId, data.assignedToId);
+    }
 
     const milestone = await this.prisma.developmentMilestone.create({
       data: {
@@ -165,13 +169,13 @@ export class FarmDevelopmentService {
     });
 
     // Auto-update phase status and progress
-    await this.updatePhaseStatus(phaseId);
+    await this.updatePhaseStatus(farmId, phaseId);
 
     return milestone;
   }
 
-  async getMilestonesByPhase(phaseId: string) {
-    await this.getPhaseById(phaseId);
+  async getMilestonesByPhase(farmId: string, phaseId: string) {
+    await this.getPhaseById(farmId, phaseId);
     return this.prisma.developmentMilestone.findMany({
       where: { phaseId },
       include: {
@@ -187,9 +191,9 @@ export class FarmDevelopmentService {
     });
   }
 
-  async getMilestoneById(id: string) {
-    const milestone = await this.prisma.developmentMilestone.findUnique({
-      where: { id },
+  async getMilestoneById(farmId: string, id: string) {
+    const milestone = await this.prisma.developmentMilestone.findFirst({
+      where: { id, phase: { farmId } },
       include: {
         assignedTo: {
           select: {
@@ -209,8 +213,11 @@ export class FarmDevelopmentService {
     return milestone;
   }
 
-  async updateMilestone(id: string, data: UpdateMilestoneDto) {
-    const milestone = await this.getMilestoneById(id);
+  async updateMilestone(farmId: string, id: string, data: UpdateMilestoneDto) {
+    const milestone = await this.getMilestoneById(farmId, id);
+    if (data.assignedToId) {
+      await this.ensureUserAccess(farmId, data.assignedToId);
+    }
 
     const updateData: any = {};
     if (data.title !== undefined) updateData.title = data.title;
@@ -243,25 +250,25 @@ export class FarmDevelopmentService {
     });
 
     // Auto-update phase status and progress
-    await this.updatePhaseStatus(milestone.phaseId);
+    await this.updatePhaseStatus(farmId, milestone.phaseId);
 
     return updatedMilestone;
   }
 
-  async deleteMilestone(id: string) {
-    const milestone = await this.getMilestoneById(id);
+  async deleteMilestone(farmId: string, id: string) {
+    const milestone = await this.getMilestoneById(farmId, id);
     await this.prisma.developmentMilestone.delete({
       where: { id },
     });
 
     // Auto-update phase status and progress
-    await this.updatePhaseStatus(milestone.phaseId);
+    await this.updatePhaseStatus(farmId, milestone.phaseId);
 
     return { success: true };
   }
 
-  async completeMilestone(id: string) {
-    const milestone = await this.getMilestoneById(id);
+  async completeMilestone(farmId: string, id: string) {
+    const milestone = await this.getMilestoneById(farmId, id);
 
     const updatedMilestone = await this.prisma.developmentMilestone.update({
       where: { id },
@@ -281,14 +288,18 @@ export class FarmDevelopmentService {
     });
 
     // Auto-update phase status and progress
-    await this.updatePhaseStatus(milestone.phaseId);
+    await this.updatePhaseStatus(farmId, milestone.phaseId);
 
     return updatedMilestone;
   }
 
   // Progress Calculation
   async calculatePhaseProgress(phaseId: string): Promise<number> {
-    const phase = await this.getPhaseById(phaseId);
+    const phase = await this.prisma.farmDevelopmentPhase.findUnique({
+      where: { id: phaseId },
+      include: { milestones: true },
+    });
+    if (!phase) throw new NotFoundException(`Phase with ID ${phaseId} not found`);
     const milestones = phase.milestones;
 
     if (milestones.length === 0) {
@@ -360,8 +371,8 @@ export class FarmDevelopmentService {
   }
 
   // Auto-update methods
-  async updatePhaseStatus(phaseId: string) {
-    const phase = await this.getPhaseById(phaseId);
+  async updatePhaseStatus(farmId: string, phaseId: string) {
+    const phase = await this.getPhaseById(farmId, phaseId);
     const milestones = phase.milestones;
 
     // Calculate progress
@@ -464,5 +475,20 @@ export class FarmDevelopmentService {
       },
     });
   }
-}
 
+  private requireFarmId(user: any) {
+    if (!user?.farmId) throw new ForbiddenException('User is not assigned to a farm');
+    return user.farmId as string;
+  }
+
+  private async ensureUserAccess(farmId: string, userId: string) {
+    const farmUser = await this.prisma.user.findFirst({
+      where: { id: userId, farmId },
+      select: { id: true },
+    });
+
+    if (!farmUser) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+  }
+}
