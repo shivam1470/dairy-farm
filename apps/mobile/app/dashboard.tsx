@@ -1,13 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useAuthStore } from '../src/store/authStore';
+import React from 'react';
 
 const quickActions = [
-  { id: '1', title: 'Add Milk Entry', icon: '🥛' },
-  { id: '2', title: 'View Animals', icon: '🐄' },
-  { id: '3', title: 'Add Task', icon: '✓' },
-  { id: '4', title: 'Add Expense', icon: '💰' },
+  { id: '1', title: 'Add Milk', icon: '🥛', route: '/add-milk' },
+  { id: '2', title: 'Animals', icon: '🐄', route: '/animals' },
+  { id: '3', title: 'Tasks', icon: '✓', route: '/tasks' },
+  { id: '4', title: 'Workers', icon: '👥', route: '/workers' },
+  { id: '5', title: 'Expenses', icon: '💰', route: '/expenses' },
+  { id: '6', title: 'Vet Visit', icon: '🏥', route: '/vet' },
 ];
 
 const recentActivities = [
@@ -15,6 +18,39 @@ const recentActivities = [
   { id: '2', title: 'A001 - Vet visit scheduled', time: '3 hours ago' },
   { id: '3', title: 'Feed stock updated', time: '5 hours ago' },
 ];
+
+const ActionCard = React.memo(({ action, onPress }: any) => (
+  <TouchableOpacity 
+    key={action.id} 
+    style={styles.actionCard} 
+    activeOpacity={0.7}
+    onPress={() => onPress(action.route)}
+  >
+    <Text style={styles.actionIcon}>{action.icon}</Text>
+    <Text style={styles.actionTitle}>{action.title}</Text>
+  </TouchableOpacity>
+));
+ActionCard.displayName = 'ActionCard';
+
+const ActivityItem = React.memo(({ activity }: any) => (
+  <View key={activity.id} style={styles.activityItem}>
+    <View style={styles.activityDot} />
+    <View style={styles.activityContent}>
+      <Text style={styles.activityTitle}>{activity.title}</Text>
+      <Text style={styles.activityTime}>{activity.time}</Text>
+    </View>
+  </View>
+));
+ActivityItem.displayName = 'ActivityItem';
+
+const StatCard = React.memo(({ label, value, trend }: any) => (
+  <View style={styles.statCard}>
+    <Text style={styles.statValue}>{value}</Text>
+    <Text style={styles.statLabel}>{label}</Text>
+    <Text style={styles.statTrend}>{trend}</Text>
+  </View>
+));
+StatCard.displayName = 'StatCard';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -24,46 +60,31 @@ export default function DashboardScreen() {
     if (!user) {
       router.replace('/login');
     }
-  }, [user]);
+  }, [user, router]);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     await clearAuth();
     router.replace('/login');
-  };
+  }, [clearAuth, router]);
+
+  const handleActionPress = useCallback((route: string) => {
+    router.push(route as any);
+  }, [router]);
 
   if (!user) return null;
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <Text style={styles.title}>Dashboard</Text>
         <Text style={styles.subtitle}>Welcome back, {user.name}!</Text>
       </View>
 
       <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>12</Text>
-          <Text style={styles.statLabel}>Total Animals</Text>
-          <Text style={styles.statTrend}>+2 this month</Text>
-        </View>
-
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>250L</Text>
-          <Text style={styles.statLabel}>Today's Milk</Text>
-          <Text style={styles.statTrend}>+5% vs yesterday</Text>
-        </View>
-
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>₹15K</Text>
-          <Text style={styles.statLabel}>This Week Revenue</Text>
-          <Text style={styles.statTrend}>+8%</Text>
-        </View>
-
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>8</Text>
-          <Text style={styles.statLabel}>Pending Tasks</Text>
-          <Text style={styles.statTrend}>3 urgent</Text>
-        </View>
+        <StatCard label="Total Animals" value="12" trend="+2 this month" />
+        <StatCard label="Today's Milk" value="250L" trend="+5% vs yesterday" />
+        <StatCard label="This Week Revenue" value="₹15K" trend="+8%" />
+        <StatCard label="Pending Tasks" value="8" trend="3 urgent" />
       </View>
 
       {/* Quick Actions */}
@@ -71,10 +92,7 @@ export default function DashboardScreen() {
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionsGrid}>
           {quickActions.map((action) => (
-            <TouchableOpacity key={action.id} style={styles.actionCard}>
-              <Text style={styles.actionIcon}>{action.icon}</Text>
-              <Text style={styles.actionTitle}>{action.title}</Text>
-            </TouchableOpacity>
+            <ActionCard key={action.id} action={action} onPress={handleActionPress} />
           ))}
         </View>
       </View>
@@ -83,17 +101,11 @@ export default function DashboardScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Recent Activity</Text>
         {recentActivities.map((activity) => (
-          <View key={activity.id} style={styles.activityItem}>
-            <View style={styles.activityDot} />
-            <View style={styles.activityContent}>
-              <Text style={styles.activityTitle}>{activity.title}</Text>
-              <Text style={styles.activityTime}>{activity.time}</Text>
-            </View>
-          </View>
+          <ActivityItem key={activity.id} activity={activity} />
         ))}
       </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} activeOpacity={0.8}>
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
     </ScrollView>

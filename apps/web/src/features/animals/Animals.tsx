@@ -17,9 +17,15 @@ import { Warning } from '@mui/icons-material';
 import { Animal } from '@dairy-farm/types';
 import { animalsApi } from '@/lib/animals-api';
 import { useAuthStore } from '@/store/authStore';
+import dynamic from 'next/dynamic';
 import AnimalsList from './components/AnimalsList';
-import AnimalForm from './components/AnimalForm';
-import AnimalDetails from './components/AnimalDetails';
+
+const AnimalForm = dynamic(() => import('./components/AnimalForm'), {
+  loading: () => <div>Loading Form...</div>,
+});
+const AnimalDetails = dynamic(() => import('./components/AnimalDetails'), {
+  loading: () => <div>Loading Details...</div>,
+});
 
 const Animals: React.FC = () => {
   const [animals, setAnimals] = useState<Animal[]>([]);

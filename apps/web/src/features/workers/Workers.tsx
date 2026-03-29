@@ -1,34 +1,20 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
   Box,
   Button,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Snackbar,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
   Typography,
-  Paper,
 } from '@mui/material';
-import { Add, Delete } from '@mui/icons-material';
-import { CreateWorkerDto, Worker, WorkerRole, WorkerShift, WorkerStatus } from '@dairy-farm/types';
+import { Add } from '@mui/icons-material';
+import { CreateWorkerDto, Worker } from '@dairy-farm/types';
 import { useAuthStore } from '@/store/authStore';
 import { workersApi } from '@/lib/workers-api';
+import WorkerList from './components/WorkerList';
+import WorkerForm from './components/WorkerForm';
 
 const Workers: React.FC = () => {
   const { user } = useAuthStore();
@@ -40,22 +26,6 @@ const Workers: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
-  const [createValues, setCreateValues] = useState<Omit<CreateWorkerDto, 'farmId'>>({
-    name: '',
-    contactNumber: '',
-    email: '',
-    address: '',
-    role: WorkerRole.OTHER,
-    shift: WorkerShift.DAY,
-    salary: 0,
-    joinDate: new Date().toISOString().split('T')[0],
-    status: WorkerStatus.ACTIVE,
-    notes: '',
-  });
-
-  const roleOptions = useMemo(() => Object.values(WorkerRole), []);
-  const shiftOptions = useMemo(() => Object.values(WorkerShift), []);
-  const statusOptions = useMemo(() => Object.values(WorkerStatus), []);
 
   const loadWorkers = useCallback(async () => {
     if (!farmId) return;
@@ -75,38 +45,25 @@ const Workers: React.FC = () => {
     loadWorkers();
   }, [loadWorkers]);
 
-  const openCreate = () => {
-    setCreateValues({
-      name: '',
-      contactNumber: '',
-      email: '',
-      address: '',
-      role: WorkerRole.OTHER,
-      shift: WorkerShift.DAY,
-      salary: 0,
-      joinDate: new Date().toISOString().split('T')[0],
-      status: WorkerStatus.ACTIVE,
-      notes: '',
-    });
+  const openCreate = useCallback(() => {
     setCreateOpen(true);
-  };
+  }, []);
 
-  const handleCreate = async () => {
+  const closeCreate = useCallback(() => {
+    setCreateOpen(false);
+  }, []);
+
+  const handleCreate = useCallback(async (values: Omit<CreateWorkerDto, 'farmId'>) => {
     if (!farmId) return;
     try {
       setError(null);
       const payload: CreateWorkerDto = {
         farmId,
-        name: createValues.name,
-        contactNumber: createValues.contactNumber,
-        email: createValues.email || undefined,
-        address: createValues.address || undefined,
-        role: createValues.role,
-        shift: createValues.shift,
-        salary: Number(createValues.salary),
-        joinDate: createValues.joinDate,
-        status: createValues.status,
-        notes: createValues.notes || undefined,
+        ...values,
+        email: values.email || undefined,
+        address: values.address || undefined,
+        salary: Number(values.salary),
+        notes: values.notes || undefined,
       };
       const created = await workersApi.create(payload);
       setWorkers((prev) => [created, ...prev]);
@@ -115,9 +72,9 @@ const Workers: React.FC = () => {
     } catch (e: any) {
       setError(e.response?.data?.message || 'Failed to create worker');
     }
-  };
+  }, [farmId]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = useCallback(async (id: string) => {
     try {
       setError(null);
       await workersApi.delete(id);
@@ -126,7 +83,7 @@ const Workers: React.FC = () => {
     } catch (e: any) {
       setError(e.response?.data?.message || 'Failed to delete worker');
     }
-  };
+  }, []);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -144,182 +101,9 @@ const Workers: React.FC = () => {
         </Button>
       </Box>
 
-      {loading ? (
-        <Typography>Loading workers...</Typography>
-      ) : (
-        <TableContainer component={Paper} data-testid="workers-list">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Role</TableCell>
-                <TableCell>Shift</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Contact</TableCell>
-                <TableCell align="right">Salary</TableCell>
-                <TableCell>Join Date</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {workers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8}>
-                    <Typography color="text.secondary">No workers found.</Typography>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                workers.map((w) => (
-                  <TableRow key={w.id} data-testid={`worker-row-${w.id}`}>
-                    <TableCell>{w.name}</TableCell>
-                    <TableCell>{String(w.role).replace('_', ' ')}</TableCell>
-                    <TableCell>{String(w.shift).replace('_', ' ')}</TableCell>
-                    <TableCell>{String(w.status).replace('_', ' ')}</TableCell>
-                    <TableCell>{w.contactNumber}</TableCell>
-                    <TableCell align="right">₹{w.salary}</TableCell>
-                    <TableCell>{new Date(w.joinDate).toLocaleDateString('en-IN')}</TableCell>
-                    <TableCell align="right">
-                      <Button
-                        color="error"
-                        size="small"
-                        startIcon={<Delete />}
-                        onClick={() => handleDelete(w.id)}
-                        data-testid={`worker-delete-${w.id}`}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+      <WorkerList workers={workers} loading={loading} onDelete={handleDelete} />
 
-      <Dialog open={createOpen} onClose={() => setCreateOpen(false)} maxWidth="sm" fullWidth data-testid="worker-form-dialog">
-        <DialogTitle>Add Worker</DialogTitle>
-        <DialogContent>
-          <Box sx={{ pt: 1, display: 'grid', gap: 2 }}>
-            <TextField
-              label="Name"
-              value={createValues.name}
-              onChange={(e) => setCreateValues((p) => ({ ...p, name: e.target.value }))}
-              inputProps={{ 'data-testid': 'worker-form-name' }}
-              fullWidth
-            />
-            <TextField
-              label="Contact Number"
-              value={createValues.contactNumber}
-              onChange={(e) => setCreateValues((p) => ({ ...p, contactNumber: e.target.value }))}
-              inputProps={{ 'data-testid': 'worker-form-contactNumber' }}
-              fullWidth
-            />
-            <TextField
-              label="Email (optional)"
-              value={createValues.email ?? ''}
-              onChange={(e) => setCreateValues((p) => ({ ...p, email: e.target.value }))}
-              inputProps={{ 'data-testid': 'worker-form-email' }}
-              fullWidth
-            />
-            <TextField
-              label="Address (optional)"
-              value={createValues.address ?? ''}
-              onChange={(e) => setCreateValues((p) => ({ ...p, address: e.target.value }))}
-              inputProps={{ 'data-testid': 'worker-form-address' }}
-              fullWidth
-            />
-
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-              <FormControl fullWidth>
-                <InputLabel>Role</InputLabel>
-                <Select
-                  label="Role"
-                  value={createValues.role}
-                  onChange={(e) => setCreateValues((p) => ({ ...p, role: e.target.value as WorkerRole }))}
-                  inputProps={{ 'data-testid': 'worker-form-role' }}
-                >
-                  {roleOptions.map((r) => (
-                    <MenuItem key={r} value={r}>
-                      {String(r).replace('_', ' ')}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth>
-                <InputLabel>Shift</InputLabel>
-                <Select
-                  label="Shift"
-                  value={createValues.shift}
-                  onChange={(e) => setCreateValues((p) => ({ ...p, shift: e.target.value as WorkerShift }))}
-                  inputProps={{ 'data-testid': 'worker-form-shift' }}
-                >
-                  {shiftOptions.map((s) => (
-                    <MenuItem key={s} value={s}>
-                      {String(s).replace('_', ' ')}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-              <TextField
-                label="Salary"
-                type="number"
-                value={createValues.salary}
-                onChange={(e) => setCreateValues((p) => ({ ...p, salary: Number(e.target.value) }))}
-                inputProps={{ 'data-testid': 'worker-form-salary' }}
-                fullWidth
-              />
-              <TextField
-                label="Join Date"
-                type="date"
-                value={createValues.joinDate}
-                onChange={(e) => setCreateValues((p) => ({ ...p, joinDate: e.target.value }))}
-                inputProps={{ 'data-testid': 'worker-form-joinDate' }}
-                InputLabelProps={{ shrink: true }}
-                fullWidth
-              />
-            </Box>
-
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                label="Status"
-                value={createValues.status}
-                onChange={(e) => setCreateValues((p) => ({ ...p, status: e.target.value as WorkerStatus }))}
-                inputProps={{ 'data-testid': 'worker-form-status' }}
-              >
-                {statusOptions.map((s) => (
-                  <MenuItem key={s} value={s}>
-                    {String(s).replace('_', ' ')}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <TextField
-              label="Notes (optional)"
-              value={createValues.notes ?? ''}
-              onChange={(e) => setCreateValues((p) => ({ ...p, notes: e.target.value }))}
-              inputProps={{ 'data-testid': 'worker-form-notes' }}
-              fullWidth
-              multiline
-              rows={2}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCreateOpen(false)} data-testid="worker-form-cancel">
-            Cancel
-          </Button>
-          <Button onClick={handleCreate} variant="contained" data-testid="worker-form-submit">
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <WorkerForm open={createOpen} onClose={closeCreate} onCreate={handleCreate} />
 
       <Snackbar
         open={!!error}

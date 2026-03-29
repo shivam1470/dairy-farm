@@ -34,7 +34,7 @@ interface AnimalDetailsProps {
   onEdit: () => void;
 }
 
-const AnimalDetails: React.FC<AnimalDetailsProps> = ({ animal, open, onClose, onEdit }) => {
+const AnimalDetails: React.FC<AnimalDetailsProps> = React.memo(({ animal, open, onClose, onEdit }) => {
   if (!animal) return null;
 
   const InfoItem: React.FC<{ icon: React.ReactNode; label: string; value: string | number }> = ({
@@ -243,6 +243,8 @@ const AnimalDetails: React.FC<AnimalDetailsProps> = ({ animal, open, onClose, on
       </DialogActions>
     </Dialog>
   );
-};
+});
+
+AnimalDetails.displayName = 'AnimalDetails';
 
 export default AnimalDetails;
