@@ -36,7 +36,7 @@ interface AnimalFormProps {
   farmId: string;
 }
 
-const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, animal, farmId }) => {
+const AnimalForm: React.FC<AnimalFormProps> = React.memo(({ open, onClose, onSuccess, animal, farmId }) => {
   const initialValues: CreateAnimalDto = {
     ...defaultAnimalValues,
     farmId,
@@ -497,6 +497,8 @@ const AnimalForm: React.FC<AnimalFormProps> = ({ open, onClose, onSuccess, anima
       </Formik>
     </LocalizationProvider>
   );
-};
+});
+
+AnimalForm.displayName = 'AnimalForm';
 
 export default AnimalForm;

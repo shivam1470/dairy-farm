@@ -26,11 +26,15 @@
       "package": "com.dairyfarm.mobile"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "scheme": "dairyfarm",
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "experiments": {
+      "tsconfigPaths": true
+    }
   }
 }

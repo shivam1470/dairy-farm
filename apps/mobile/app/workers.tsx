@@ -1,84 +1,78 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
 
-const mockAnimals = [
-  { id: 'A001', breed: 'Holstein', age: '3 years', health: 'Healthy', milk: 'Milking' },
-  { id: 'A002', breed: 'Jersey', age: '2 years', health: 'Healthy', milk: 'Dry' },
-  { id: 'A003', breed: 'Holstein', age: '4 years', health: 'Under Treatment', milk: 'Milking' },
+// Mock workers for initial implementation
+const mockWorkers = [
+  { id: '1', name: 'John Doe', role: 'Manager', status: 'Active', contact: '9876543210' },
+  { id: '2', name: 'Jane Smith', role: 'Milker', status: 'Active', contact: '9876543211' },
+  { id: '3', name: 'Mike Ross', role: 'Vet Assistant', status: 'On Leave', contact: '9876543212' },
 ];
 
-const AnimalCard = React.memo(({ item }: any) => (
-  <View style={styles.card}>
-    <View style={styles.cardHeader}>
-      <Text style={styles.animalId}>{item.id}</Text>
-      <View style={[styles.badge, item.health === 'Healthy' ? styles.badgeGreen : styles.badgeOrange]}>
-        <Text style={styles.badgeText}>{item.health}</Text>
+const WorkerCard = React.memo(({ item }: any) => {
+  return (
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.workerName}>{item.name}</Text>
+        <View style={[styles.statusBadge, item.status === 'Active' ? styles.statusGreen : styles.statusGray]}>
+          <Text style={styles.statusText}>{item.status}</Text>
+        </View>
       </View>
+      <View style={styles.cardBody}>
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Role:</Text>
+          <Text style={styles.value}>{item.role}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Contact:</Text>
+          <Text style={styles.value}>{item.contact}</Text>
+        </View>
+      </View>
+      <TouchableOpacity style={styles.viewButton}>
+        <Text style={styles.viewButtonText}>View Profile</Text>
+      </TouchableOpacity>
     </View>
-    <View style={styles.cardBody}>
-      <View style={styles.infoRow}>
-        <Text style={styles.label}>Breed:</Text>
-        <Text style={styles.value}>{item.breed}</Text>
-      </View>
-      <View style={styles.infoRow}>
-        <Text style={styles.label}>Age:</Text>
-        <Text style={styles.value}>{item.age}</Text>
-      </View>
-      <View style={styles.infoRow}>
-        <Text style={styles.label}>Milk Status:</Text>
-        <Text style={styles.value}>{item.milk}</Text>
-      </View>
-    </View>
-    <TouchableOpacity style={styles.viewButton} activeOpacity={0.7}>
-      <Text style={styles.viewButtonText}>View Details</Text>
-    </TouchableOpacity>
-  </View>
-));
+  );
+});
 
-AnimalCard.displayName = 'AnimalCard';
+WorkerCard.displayName = 'WorkerCard';
 
-export default function AnimalsScreen() {
+export default function WorkersScreen() {
   const [search, setSearch] = useState('');
 
-  const filteredAnimals = useMemo(() => {
-    return mockAnimals.filter(animal =>
-      animal.id.toLowerCase().includes(search.toLowerCase()) ||
-      animal.breed.toLowerCase().includes(search.toLowerCase())
+  const filteredWorkers = useMemo(() => {
+    return mockWorkers.filter(worker =>
+      worker.name.toLowerCase().includes(search.toLowerCase()) ||
+      worker.role.toLowerCase().includes(search.toLowerCase())
     );
   }, [search]);
 
-  const renderAnimalCard = useCallback(({ item }: any) => (
-    <AnimalCard item={item} />
+  const renderWorkerCard = useCallback(({ item }: any) => (
+    <WorkerCard item={item} />
   ), []);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Animals</Text>
+        <Text style={styles.title}>Workers</Text>
       </View>
 
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search by ID or breed..."
+          placeholder="Search workers..."
           value={search}
           onChangeText={setSearch}
-          clearButtonMode="while-editing"
         />
       </View>
 
       <FlatList
-        data={filteredAnimals}
-        renderItem={renderAnimalCard}
+        data={filteredWorkers}
+        renderItem={renderWorkerCard}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContainer}
-        removeClippedSubviews={true}
-        initialNumToRender={10}
-        maxToRenderPerBatch={10}
-        windowSize={5}
       />
 
-      <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
+      <TouchableOpacity style={styles.fab}>
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
     </View>
@@ -129,27 +123,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  animalId: {
+  workerName: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
   },
-  badge: {
-    paddingHorizontal: 12,
+  statusBadge: {
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
   },
-  badgeGreen: {
-    backgroundColor: '#4caf50',
-  },
-  badgeOrange: {
-    backgroundColor: '#ff9800',
-  },
-  badgeText: {
-    color: 'white',
-    fontSize: 11,
-    fontWeight: '600',
-  },
+  statusGreen: { backgroundColor: '#4caf50' },
+  statusGray: { backgroundColor: '#9e9e9e' },
+  statusText: { color: 'white', fontSize: 11, fontWeight: 'bold' },
   cardBody: {
     marginBottom: 12,
   },
@@ -168,13 +154,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   viewButton: {
-    backgroundColor: '#2e7d32',
-    padding: 10,
+    borderWidth: 1,
+    borderColor: '#2e7d32',
+    padding: 8,
     borderRadius: 6,
     alignItems: 'center',
   },
   viewButtonText: {
-    color: 'white',
+    color: '#2e7d32',
     fontSize: 14,
     fontWeight: '600',
   },

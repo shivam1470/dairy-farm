@@ -41,7 +41,7 @@ interface AnimalsListProps {
   onAdd: () => void;
 }
 
-const AnimalsList: React.FC<AnimalsListProps> = ({
+const AnimalsList: React.FC<AnimalsListProps> = React.memo(({
   animals,
   loading,
   error,
@@ -280,6 +280,8 @@ const AnimalsList: React.FC<AnimalsListProps> = ({
       </TableContainer>
     </Box>
   );
-};
+});
+
+AnimalsList.displayName = 'AnimalsList';
 
 export default AnimalsList;
